@@ -1,0 +1,57 @@
+bg_node_editor_add:
+    edit: true
+    category: Node Editor
+    annotation: Add selection to Node Editor
+    language: mel
+    keys: alt+a
+    command : |
+        NodeEditorGraphAddSelected;
+
+bg_node_editor_remove:
+    edit: true
+    category: Node Editor
+    annotation: Remove selection from Node Editor
+    language: mel
+    keys: alt+r
+    command : |
+        NodeEditorGraphRemoveSelected;
+
+bg_toggle_attributes:
+    edit: true
+    category: attributes
+    annotation: Toggle Attributes
+    language: python
+    keys: ctrl+u
+    command : |
+        import bgdev.utils.attribute
+        bgdev.utils.attribute.attributes_toggle()
+
+bg_real_focus:
+    edit: true
+    category: viewport
+    annotation: Focus on the actual object select
+    language: python
+    keys: alt+f
+    command : |
+        import bgdev.utils.display
+        bgdev.utils.display.real_focus()
+
+bg_toggle_side_replace:
+    edit: true
+    category: side
+    annotation: Replace selection with opposite side
+    language: python
+    keys: alt+1
+    command : |
+        import bgdev.utils.scripts
+        bgdev.utils.scripts.toggle_side_select(toggle=True)
+
+bg_toggle_side_add:
+    edit: true
+    category: side
+    annotation: Add opposite side to selection
+    language: python
+    keys: alt+2
+    command : |
+        import bgdev.utils.scripts
+        bgdev.utils.scripts.toggle_side_select(toggle=False)

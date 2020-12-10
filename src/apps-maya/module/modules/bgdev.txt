@@ -1,0 +1,6 @@
+### bgdev - public module
++ bgdev latest ../
+PYTHONPATH+:=../../site-packages/python27
+PYTHONPATH+:=../python
+MAYA_SCRIPT_PATH+:=../mel
+MAYA_SHELF_PATH+:=shelves

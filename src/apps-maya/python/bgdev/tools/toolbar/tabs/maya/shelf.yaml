@@ -1,0 +1,969 @@
+Editors:
+    visible: false
+    type: flow
+    content:
+        - Preferences:
+              image: ../settings_prefs.png
+              source: |
+                  from maya import mel
+                  mel.eval('PreferencesWindow')
+        - Plugin manager:
+              image: ../plugins_manager.png
+              source: |
+                  from maya import mel
+                  mel.eval('PluginManager')
+        - Outliner:
+              image: ../outliner.png
+              source: |
+                  from maya import mel
+                  mel.eval('OutlinerWindow')
+        - Attribute editor:
+              image: ../attribute_editor.png
+              source: |
+                  from maya import mel
+                  mel.eval('AttributeEditor')
+        - Script editor:
+              image: ../script_editor.png
+              source: |
+                  from maya import mel
+                  mel.eval('ScriptEditor')
+        - Node editor:
+              image: ../node_editor.png
+              source: |
+                  from maya import mel
+                  mel.eval('NodeEditorWindow')
+        - Connection editor:
+              image: ../connections_editor.png
+              source: |
+                  from maya import mel
+                  mel.eval('ConnectionEditor')
+        - Expression editor:
+              image: ../expression_editor.png
+              source: |
+                  from maya import mel
+                  mel.eval('ExpressionEditor')
+        - Channel control:
+              image: ../channel_control.png
+              source: |
+                  from maya import mel
+                  mel.eval('ChannelControlEditor')
+        - Hypergraph:
+              image: ../hypergraph.png
+              source: |
+                  from maya import mel
+                  mel.eval('HypergraphHierarchyWindow')
+        - Attribute spreadsheet:
+              image: ../attribute_spreadsheet.png
+              source: |
+                  from maya import mel
+                  mel.eval('SpreadSheetEditor')
+        - Component editor:
+              image: ../component_editor.png
+              source: |
+                  from maya import mel
+                  mel.eval('ComponentEditor')
+        - Graph editor:
+              image: ../graph_editor.png
+              source: |
+                  from maya import mel
+                  mel.eval('GraphEditor')
+        - Blendshape:
+              image: ../blendshapes.png
+              source: |
+                  from maya import mel
+                  mel.eval('ShapeEditor')
+        - UV texture editor:
+              image: ../uv_editor.png
+              source: |
+                  from maya import mel
+                  mel.eval('TextureViewWindow')
+        - Hypershade:
+              image: ../hypershade.png
+              source: |
+                  from maya import mel
+                  mel.eval('HypershadeWindow')
+        - Render view:
+              image: ../render_view.png
+              source: |
+                  from maya import mel
+                  mel.eval('RenderViewWindow')
+        - Resource manager:
+              image: ../resources_manager.png
+              source: |
+                  from maya.app.general import resourceBrowser
+                  x = resourceBrowser.resourceBrowser()
+                  x.run()
+Commons:
+    visible: true
+    type: flow
+    content:
+        - Project window:
+              image: ../projectWindow.png
+              source: |
+                  from maya import mel
+                  mel.eval('projectWindow')
+        - Set project:
+              image: ../setProject.png
+              source: |
+                  from maya import mel
+                  mel.eval('SetProject')
+        - Save scene as:
+              image: ../saveSceneAs.png
+              source: |
+                  from maya import mel
+                  mel.eval('SaveSceneAs')
+        - Center pivot:
+              image: ../centerPivot.png
+              source: |
+                  from maya import mel
+                  mel.eval('CenterPivot')
+        - History selected:
+              image: ../historySelected.png
+              source: |
+                  from maya import mel
+                  mel.eval('DeleteHistory')
+        - Freeze transforms:
+              image: ../freezeTransforms.png
+              source: |
+                  from maya import mel
+                  mel.eval('FreezeTransformations')
+        - History freeze:
+              image: ../historyFreeze.png
+              source: |
+                  from maya import mel
+                  mel.eval('DeleteHistory; FreezeTransformations;')
+        - Delete unused:
+              image: ../deleteUnused.png
+              source: |
+                  from maya import mel
+                  mel.eval('hyperShadePanelMenuCommand("hyperShadePanel1", "deleteUnusedNodes")')
+                  mel.eval('print "Unused Nodes have been successfully deleted"')
+        - Update Intermediate:
+              image: ../updateIntermediate.png
+              source: |
+                  import bgdev.maya.rigging.node.shape as bgshape
+                  import pymel.core as pm
+                  s = pm.selected()
+                  [bgshape.update_intermediate(s[0], _) for _ in s[1:]]
+Rigging:
+    visible: true
+    type: flow
+    content:
+        - Orient joint:
+              image: orientJoint.png
+              source: |
+                  from maya import mel
+                  mel.eval('OrientJointOptions')
+        - Joint tool:
+              image: kinJoint.png
+              source: |
+                  from maya import mel
+                  mel.eval('JointTool')
+        - Locator:
+              image: locator.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreateLocator')
+        - Ik handle:
+              image: kinHandle.png
+              source: |
+                  from maya import mel
+                  mel.eval('IKHandleTool')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('IKHandleToolOptions')
+        - Ik spline handle:
+              image: kinSplineHandle.png
+              source: |
+                  from maya import mel
+                  mel.eval('IKSplineHandleTool')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('IKSplineHandleToolOptions')
+        - Add influence:
+              image: addWrapInfluence.png
+              source: |
+                  from maya import mel
+                  mel.eval('AddInfluence')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('AddInfluenceOptions')
+        - Interactive bind skin:
+              image: interactiveBindTool.png
+              source: |
+                  from maya import mel
+                  mel.eval('InteractiveBindSkin')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('setToolTo skinBindingContext')
+        - Smooth skin:
+              image: smoothSkin.png
+              source: |
+                  from maya import mel
+                  mel.eval('SmoothBindSkin')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('SmoothBindSkinOptions')
+        - Paint skin weights:
+              image: paintSkinWeights.png
+              source: |
+                  from maya import mel
+                  mel.eval('ArtPaintSkinWeightsTool')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('ArtPaintSkinWeightsToolOptions')
+        - Parent constraint:
+              image: parentConstraint.png
+              label: Parent
+              source: |
+                  from maya import mel
+                  mel.eval('ParentConstraint')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('ParentConstraintOptions')
+        - Point constraint:
+              image: posConstraint.png
+              label: Point
+              source: |
+                  from maya import mel
+                  mel.eval('PointConstraint')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('PointConstraintOptions')
+        - Orient constraint:
+              image: orientConstraint.png
+              label: Orient
+              source: |
+                  from maya import mel
+                  mel.eval('OrientConstraint')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('OrientConstraintOptions')
+        - Aim constraint:
+              image: aimConstraint.png
+              label: Aim
+              source: |
+                  from maya import mel
+                  mel.eval('AimConstraint')
+              menu:
+                  Options...:
+                      type: menu
+                      source: |
+                          from maya import mel
+                          mel.eval('AimConstraintOptions')
+        - Scale constraint:
+              image: scaleConstraint.png
+              label: Scale
+              source: |
+                  from maya import mel
+                  mel.eval('ScaleConstraint')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('ScaleConstraintOptions')
+        - Pole Vector constraint:
+              image: poleVectorConstraint.png
+              label: Pole Vect
+              source: |
+                  from maya import mel
+                  mel.eval('PoleVectorConstraint')
+              menu:
+                  Options...:
+                      source: |
+                          from maya import mel
+                          mel.eval('PoleVectorConstraintOptions')
+Scripts:
+    visible: true
+    type: flow
+    content:
+        - jointSize:
+              image: ../jointSize.png
+              source: |
+                  import bgdev.ui.joint
+                  bgdev.ui.joint.display_joint_size_window()
+        - LRASelected:
+              image: ../LRASelected.png
+              source: |
+                  from maya import mel
+                  mel.eval('ToggleLocalRotationAxes')
+        - onJointOrient:
+              image: ../onJointOrient.png
+              source: |
+                  import bgdev.utils.scripts as sk
+                  sk.showJointOrient(True)
+        - offJointOrient:
+              image: ../offJointOrient.png
+              source: |
+                  import bgdev.utils.scripts as sk
+                  sk.showJointOrient(False)
+        - hashRename:
+              image: ../hashRename.png
+              source: |
+                  import bgdev.tools.renamer.core as rm
+                  x = rm.Renamer()
+                  x.show()
+        - quickDistance:
+              image: distanceDim.png
+              source: |
+                  import bgdev.utils.scripts as sk
+                  reload(sk)
+                  sk.quick_distance()
+        - mirrorPos:
+              image: mirrorSkinWeight.png
+              source: |
+                  import bgdev.utils.scripts as sk
+                  sk.mirror_position()
+              menu:
+                  Options...:
+                      source: |
+                          import bgdev.utils.scripts as sk
+                          sk.mirror_position(True)
+        - alignFingers:
+              image: ../finger.png
+              source: |
+                  import bgdev.utils.scripts as sk
+                  reload(sk)
+                  sk.align_fingers()
+              menu:
+                  Options...:
+                      source: |
+                          import bgdev.utils.scripts as sk
+                          reload(sk)
+                          sk.align_fingers(gui=True)
+        - camClipPlanes:
+              image: cameraAim.png
+              source: |
+                  import bgdev.utils.scripts as sk
+                  reload(sk)
+                  sk.show_cam_clip_planes()
+              menu:
+                  Default clip planes:
+                      source: |
+                          import bgdev.utils.scripts as sk
+                          reload(sk)
+                          sk.set_default_clip_plane()
+        - selectionLocator:
+              image: ../locatorSelection.png
+              source: |
+                  import bgdev.utils.locators
+                  bgdev.utils.locators.locator_on_selection('pivot')
+              menu:
+                  Matrix:
+                      source: |
+                          import bgdev.utils.locators
+                          bgdev.utils.locators.locator_on_selection('matrix')
+                  Pivot:
+                      source: |
+                          import bgdev.utils.locators
+                          bgdev.utils.locators.locator_on_selection('pivot')
+                  Manipulator:
+                      source: |
+                          import bgdev.utils.locators
+                          bgdev.utils.locators.locator_on_selection('manip')
+        - aimLocator:
+              image: ../aimLocator.png
+              source: |
+                  import bgdev.utils.locators
+                  bgdev.utils.locators.create_aim_locator(middle=True)
+              menu:
+                  First:
+                      source: |
+                          import bgdev.utils.locators
+                          bgdev.utils.locators.create_aim_locator(middle=False)
+        - snapTogether:
+              image: snapTogetherTool.png
+              source: |
+                  import pymel.core as pm
+                  _selection = pm.selected()
+                  _srcs, _tgt = _selection[:-1], _selection[-1]
+                  for each in _srcs:
+                      each.setMatrix(_tgt.getMatrix(worldSpace=1), worldSpace=1)
+              menu:
+                  Translate:
+                      source: |
+                          from maya import cmds
+                          _selection = cmds.ls(sl=True)
+                          if len(_selection) == 1:
+                              _position = cmds.xform(_selection[0], q=True, ws=True, rp=True)
+                              _selection.append(_selection[0])
+                          else:
+                              _position = cmds.xform(_selection[-1], q=True, ws=True, rp=True)
+                          for _ in _selection[:-1]:
+                              cmds.xform(_, t=_position, ws=True)
+                  Rotate:
+                      source: |
+                          from maya import cmds
+                          _selection = cmds.ls(sl=True)
+                          if len(_selection) == 1:
+                              _rotation = cmds.xform(_selection[0], q=True, ws=True, ro=True)
+                              _selection.append(_selection[0])
+                          else:
+                              _rotation = cmds.xform(_selection[-1], q=True, ws=True, ro=True)
+                          for _ in _selection[:-1]:
+                              cmds.xform(_, ro=_rotation, ws=True)
+                  Translate and Rotate:
+                      source: |
+                          from maya import cmds
+                          _selection = cmds.ls(sl=True)
+                          if len(_selection) == 1:
+                              _position = cmds.xform(_selection[0], q=True, ws=True, rp=True)
+                              _rotation = cmds.xform(_selection[0], q=True, ws=True, ro=True)
+                              _selection.append(_selection[0])
+                          else:
+                              _position = cmds.xform(_selection[-1], q=True, ws=True, rp=True)
+                              _rotation = cmds.xform(_selection[-1], q=True, ws=True, ro=True)
+                          for _ in _selection[:-1]:
+                              cmds.xform(_, t=_position, ro=_rotation, ws=True)
+                  All (pivot):
+                      source: |
+                          from maya import cmds
+                          _selection = cmds.ls(sl=True)
+                          if len(_selection) == 1:
+                              _position = cmds.xform(_selection[0], q=True, ws=True, rp=True)
+                              _rotation = cmds.xform(_selection[0], q=True, ws=True, ro=True)
+                              _selection.append(_selection[0])
+                          else:
+                              _position = cmds.xform(_selection[-1], q=True, ws=True, rp=True)
+                              _rotation = cmds.xform(_selection[-1], q=True, ws=True, ro=True)
+                              _scale = cmds.xform(_selection[-1], q=True, ws=True, s=True)
+                          for _ in _selection[:-1]:
+                              cmds.xform(_, t=_position, ro=_rotation, s=_scale, ws=True)
+                  All (matrix):
+                      source: |
+                          import pymel.core as pm
+                          _selection = pm.selected()
+                          _srcs, _tgt = _selection[:-1], _selection[-1]
+                          if len(_selection) == 1:
+                              _srcs = [_tgt]
+                          for each in _srcs:
+                              each.setMatrix(_tgt.getMatrix(worldSpace=1), worldSpace=1)
+Controlers:
+    visible: false
+    type: flow
+    content:
+        - ctrlArrow:
+              type: button
+              image: ../ctrlArrow.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("arrow_ctrl", variant=0)
+        - ctrlArrow2:
+              type: button
+              image: ../ctrlArrow2.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("arrow_ctrl", variant=1)
+        - ctrlCircle:
+              type: button
+              image: ../ctrlCircle.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("circle_ctrl", variant=0)
+        - ctrlCross:
+              type: button
+              image: ../ctrlCross.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("cross_ctrl", variant=0)
+        - ctrlCross2:
+              type: button
+              image: ../ctrlCross2.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("cross_ctrl", variant=1)
+        - ctrlStar:
+              type: button
+              image: ../ctrlStar.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("star_ctrl", variant=0)
+        - ctrlCube:
+              type: button
+              image: ../ctrlCube.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("cube_ctrl", variant=0)
+        - ctrlFoot:
+              type: button
+              image: ../ctrlFoot.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("foot_ctrl", variant=0)
+        - ctrlFootVector:
+              type: button
+              image: ../ctrlFoot.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("foot_polevector_ctrl", variant=0)
+        - ctrlFK:
+              type: button
+              image: ../ctrlFK.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("fk_ctrl", variant=0)
+        - ctrlIK:
+              type: button
+              image: ../ctrlIK.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("ik_ctrl", variant=0)
+        - ctrlIKFK:
+              type: button
+              image: ../ctrlIKFK.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("ikfk_ctrl", variant=0)
+        - ctrlJoint:
+              type: button
+              image: ../ctrlJoint.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("joint_ctrl", variant=0)
+        - ctrlSquare:
+              type: button
+              image: ../ctrlSquare.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("square_ctrl", variant=0)
+        - ctrlStickBall:
+              type: button
+              image: ../ctrlStickBall.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("stickball_ctrl", variant=0)
+        - ctrlStickBall2:
+              type: button
+              image: ../ctrlStickBall2.png
+              source: |
+                  import bgdev.utils.controler
+                  bgdev.utils.controler.create_control("stickball_ctrl", variant=1)
+Curves:
+    visible: false
+    type: flow
+    content:
+        - circle:
+              type: button
+              image: circle.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreateNURBSCircle')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreateNURBSCircleOptions')
+        - square:
+              type: button
+              image: square.png
+              source: |
+                  from maya import mel
+                  mel.eval('curve -d 1 -p 1 0 -1 -p 1 0 1 -p -1 0 1 -p -1 0 -1 -p 1 0 -1 -k 0 -k 2 -k 4 -k 6 -k 8 ')
+        - triangle:
+              type: button
+              image: ../triangle.png
+              source: |
+                  from maya import mel
+                  mel.eval('curve -d 1 -p -1 0 1 -p 0 0 -1 -p 1 0 1 -p -1 0 1 -k 0 -k 2.236068 -k 4.472136 -k 6.472136 ')
+        - attachCurves:
+              type: button
+              image: attachCurves.png
+              source: |
+                  from maya import mel
+                  mel.eval('AttachCurve')
+              script2: |
+                  from maya import mel
+                  mel.eval('AttachCurveOptions')
+        - curveAddPoint:
+              type: button
+              image: curveAddPt.png
+              source: |
+                  from maya import mel
+                  mel.eval('AddPointsTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('AddPointsTool')
+        - curveCV:
+              type: button
+              image: curveCV.png
+              source: |
+                  from maya import mel
+                  mel.eval('CVCurveTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('CVCurveToolOptions')
+        - curveEP:
+              type: button
+              image: curveEP.png
+              source: |
+                  from maya import mel
+                  mel.eval('EPCurveTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('EPCurveToolOptions')
+        - detachCurve:
+              type: button
+              image: detachCurve.png
+              source: |
+                  from maya import mel
+                  mel.eval('DetachCurve')
+              script2: |
+                  from maya import mel
+                  mel.eval('DetachCurveOptions')
+        - insertKnot:
+              type: button
+              image: insertKnot.png
+              source: |
+                  from maya import mel
+                  mel.eval('InsertKnot')
+              script2: |
+                  from maya import mel
+                  mel.eval('InsertKnotOptions')
+        - offsetCurve:
+              type: button
+              image: offsetCurve.png
+              source: |
+                  from maya import mel
+                  mel.eval('OffsetCurve')
+              script2: |
+                  from maya import mel
+                  mel.eval('OffsetCurveOptions')
+        - pencilCurve:
+              type: button
+              image: pencil.png
+              source: |
+                  from maya import mel
+                  mel.eval('PencilCurveTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('PencilCurveToolOptions')
+        - rebuildCurve:
+              type: button
+              image: rebuildCurve.png
+              source: |
+                  from maya import mel
+                  mel.eval('RebuildCurve')
+              script2: |
+                  from maya import mel
+                  mel.eval('RebuildCurveOptions')
+        - threePointArc:
+              type: button
+              image: threePointArc.png
+              source: |
+                  from maya import mel
+                  mel.eval('ThreePointArcTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('ThreePointArcToolOptions')
+Polygons:
+    visible: true
+    type: flow
+    content:
+        - polyPlane:
+              type: button
+              image: polyMesh.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreatePolygonPlane')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreatePolygonPlaneOptions')
+        - polySphere:
+              type: button
+              image: polySphere.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreatePolygonSphere')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreatePolygonSphereOptions')
+        - polyCube:
+              type: button
+              image: polyCube.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreatePolygonCube')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreatePolygonCubeOptions')
+        - polyCylinder:
+              type: button
+              image: polyCylinder.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreatePolygonCylinder')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreatePolygonCylinderOptions')
+        - polyPipe:
+              type: button
+              image: polyPipe.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreatePolygonPipe')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreatePolygonPipeOptions')
+        - polyPyramid:
+              type: button
+              image: polyPyramid.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreatePolygonPyramid')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreatePolygonPyramidOptions')
+        - polyCone:
+              type: button
+              image: polyCone.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreatePolygonCone')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreatePolygonConeOptions')
+        - polyTorus:
+              type: button
+              image: polyTorus.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreatePolygonTorus')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreatePolygonTorusOptions')
+        - polyAppendFace:
+              type: button
+              image: polyAppendFacet.png
+              source: |
+                  from maya import mel
+                  mel.eval('AppendToPolygonTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('AppendToPolygonToolOptions')
+        - polyCombine:
+              type: button
+              image: polyUnite.png
+              source: |
+                  from maya import mel
+                  mel.eval('CombinePolygons')
+              script2: |
+                  from maya import mel
+                  mel.eval('CombinePolygonsOptions')
+        - polyCreateFace:
+              type: button
+              image: polyCreateFacet.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreatePolygonTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreatePolygonToolOptions')
+        - polyCut:
+              type: button
+              image: polyCut.png
+              source: |
+                  from maya import mel
+                  mel.eval('CutPolygon')
+              script2: |
+                  from maya import mel
+                  mel.eval('CutPolygonOptions')
+        - polyExtract:
+              type: button
+              image: polyChipOff.png
+              source: |
+                  from maya import mel
+                  mel.eval('ExtractFace')
+              script2: |
+                  from maya import mel
+                  mel.eval('ExtractFaceOptions')
+        - polyExtrudeFace:
+              type: button
+              image: polyExtrudeFacet.png
+              source: |
+                  from maya import mel
+                  mel.eval('PolyExtrude')
+              script2: |
+                  from maya import mel
+                  mel.eval('PolyExtrudeOptions')
+        - polyMirrorGeometry:
+              type: button
+              image: polyMirrorGeometry.png
+              source: |
+                  from maya import mel
+                  mel.eval('MirrorPolygonGeometry')
+              script2: |
+                  from maya import mel
+                  mel.eval('MirrorPolygonGeometryOptions')
+        - polyPoke:
+              type: button
+              image: polyPoke.png
+              source: |
+                  from maya import mel
+                  mel.eval('PokePolygon')
+              script2: |
+                  from maya import mel
+                  mel.eval('PokePolygonOptions')
+        - polySculpt:
+              type: button
+              image: Sculpt.png
+              source: |
+                  from maya import mel
+                  mel.eval('SculptGeometryTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('SculptGeometryToolOptions')
+        - polySeparate:
+              type: button
+              image: polySeparate.png
+              source: |
+                  from maya import mel
+                  mel.eval('SeparatePolygon')
+              script2: |
+                  from maya import mel
+                  mel.eval('SeparatePolygonOptions')
+        - polySmooth:
+              type: button
+              image: polySmooth.png
+              source: |
+                  from maya import mel
+                  mel.eval('SmoothPolygon')
+              script2: |
+                  from maya import mel
+                  mel.eval('SmoothPolygonOptions')
+        - polySplitEdgeRing:
+              type: button
+              image: polySplitEdgeRing.png
+              source: |
+                  from maya import mel
+                  mel.eval('SplitEdgeRingTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('SplitEdgeRingToolOptions')
+        - polySplitFace:
+              type: button
+              image: polySplitFacet.png
+              source: |
+                  from maya import mel
+                  mel.eval('InteractiveSplitTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('InteractiveSplitToolOptions')
+Deformers:
+    visible: true
+    type: flow
+    content:
+        - blendShape:
+              type: button
+              image: blendShape.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreateBlendShape')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreateBlendShapeOptions')
+        - cluster:
+              type: button
+              image: cluster.png
+              source: |
+                  from maya import mel
+                  mel.eval('newCluster " -envelope 1"')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreateClusterOptions')
+        - lattice:
+              type: button
+              image: lattice.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreateLattice')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreateLatticeOptions')
+        - wrap:
+              type: button
+              image: wrap.png
+              source: |
+                  from maya import mel
+                  mel.eval('CreateWrap')
+              script2: |
+                  from maya import mel
+                  mel.eval('CreateWrapOptions')
+        - wire:
+              type: button
+              image: wire.png
+              source: |
+                  from maya import mel
+                  mel.eval('WireTool')
+              script2: |
+                  from maya import mel
+                  mel.eval('WireToolOptions')
+        - bendNLD:
+              type: button
+              image: bendNLD.png
+              source: |
+                  from maya import mel
+                  mel.eval('Bend')
+              script2: |
+                  from maya import mel
+                  mel.eval('BendOptions')
+        - squashNLD:
+              type: button
+              image: squashNLD.png
+              source: |
+                  from maya import mel
+                  mel.eval('Squash')
+              script2: |
+                  from maya import mel
+                  mel.eval('SquashOptions')
+        - twistNLD:
+              type: button
+              image: twistNLD.png
+              source: |
+                  from maya import mel
+                  mel.eval('Twist')
+              script2: |
+                  from maya import mel
+                  mel.eval('TwistOptions')
+        - waveNLD:
+              type: button
+              image: sineNLD.png
+              source: |
+                  from maya import mel
+                  mel.eval('Wave')
+              script2: |
+                  from maya import mel
+                  mel.eval('WaveOptions')
+        - sineNLD:
+              type: button
+              image: waveNLD.png
+              source: |
+                  from maya import mel
+                  mel.eval('Sine')
+              script2: |
+                  from maya import mel
+                  mel.eval('SineOptions')
+        - flareNLD:
+              type: button
+              image: flareNLD.png
+              source: |
+                  from maya import mel
+                  mel.eval('Flare')
+              script2: |
+                  from maya import mel
+                  mel.eval('FlareOptions')

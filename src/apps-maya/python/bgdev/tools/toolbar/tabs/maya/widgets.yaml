@@ -1,0 +1,12 @@
+Renamer:
+    visible: false
+    type: custom
+    source: |
+        import bgdev.tools.renamer.core
+        return bgdev.tools.renamer.core.Renamer
+Uniloop:
+    visible: false
+    type: custom
+    source: |
+        import bgdev.tools.uniloop
+        return bgdev.tools.uniloop.Uniloop
