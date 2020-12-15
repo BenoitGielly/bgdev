@@ -120,7 +120,7 @@ class TabWidget(QtWidgets.QTabWidget):
 
     def __init__(self, *args, **kwargs):
         super(TabWidget, self).__init__(*args, **kwargs)
-        self.tab_width, self.tab_height = (75, 20)
+        self.tab_width, self.tab_height = (60, 20)
         self.refresh_stylesheet()
 
     def refresh_stylesheet(self):

@@ -127,7 +127,6 @@ class BaseToolbar(QtWidgets.QDialog):
 
         # create tabWidget
         self.tab_widget = ui.TabWidget(self)
-        self.tab_widget.setStyleSheet("")
         main_layout.addWidget(self.tab_widget)
         self.create_toolbar_content()
 
@@ -148,10 +147,12 @@ class BaseToolbar(QtWidgets.QDialog):
             if config:
                 config_data = utils.yaml_load(config, ordered=True)
                 settings = config_data.get("settings", {})
+
             for data_file in files:
                 name = os.path.basename(data_file).rsplit(".")[0]
                 content = self.create_tab_content(data_file, settings)
-                self.tab_widget.addTab(content, name.upper())
+                insert = settings.get("insertAt", -1)
+                self.tab_widget.insertTab(insert, content, name.upper())
 
         # resize window to fit children
         # self.resize_window()
