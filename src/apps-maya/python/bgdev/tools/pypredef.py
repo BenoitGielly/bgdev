@@ -102,9 +102,9 @@ def cleanup_flags(docstring):
     temp_flags = []
     for each in lines[1:]:
         line = each.strip()
-        if "Flags" in each:
+        if "Flags:" in each:
             flag_lines.append(line)
-        elif line.startswith("-"):
+        elif line.startswith("-") and line not in temp_flags:
             temp_flags.append(line)
         elif line:
             desc_lines.append(line)
