@@ -141,10 +141,8 @@ Commons:
         - Update Intermediate:
               image: ../updateIntermediate.png
               source: |
-                  import bgdev.maya.rigging.node.shape as bgshape
-                  import pymel.core as pm
-                  s = pm.selected()
-                  [bgshape.update_intermediate(s[0], _) for _ in s[1:]]
+                  import bgdev.utils.shape
+                  bgdev.utils.shape.update_intermediate_callback()
 Rigging:
     visible: true
     type: flow
