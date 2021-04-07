@@ -13,54 +13,6 @@ from maya import cmds
 LOG = logging.getLogger(__name__)
 
 
-def get_shapes(node, intermediate=False, exclusive=False):
-    """Get the shapes of given node.
-
-    Args:
-        node (str): Node to query its shapes
-        intermediate (bool): Get intermediate shapes when True.
-        exclusive (bool): Only return the intermediate shapes if True.
-            Please note that the intermediate flag must be True as well.
-
-    Returns:
-        list: The shapes found below given node.
-
-    """
-    # if given node is a list, assume first element
-    if isinstance(node, list):
-        node = node[0]
-        LOG.info("Given node is a list. Using first element.")
-
-    # return as list if given node is already a shape
-    if cmds.objectType(node, isAType="shape"):
-        return [node]
-
-    # query shapes
-    shapes = (
-        cmds.listRelatives(
-            node,
-            shapes=True,
-            type="deformableShape",
-        )
-        or []
-    )
-
-    # separate shapes orig
-    orig = []
-    for each in list(shapes):  # duplicated `shapes` object to remove safely
-        if cmds.ls(each, intermediateObjects=True):
-            orig.append(each)
-            shapes.remove(each)
-
-    if not intermediate:
-        return shapes
-
-    if exclusive:
-        return orig
-
-    return shapes + orig
-
-
 @bgdev.utils.decorator.UNDO_REPEAT
 def update_intermediate_callback():
     """Call back :func:`update intermediate`."""
@@ -84,7 +36,7 @@ def update_intermediate(source, target):
 
     """
     if not any([cmds.objExists(_) for _ in (source, target)]):
-        LOG.warn("Source or Target doesn't exist!")
+        LOG.warning("Source or Target doesn't exist!")
         return
 
     # get source and target shapes
@@ -107,6 +59,50 @@ def update_intermediate(source, target):
     else:
         for target_shape in target_shapes:
             update_plug(source_shapes[0], target_shape)
+
+
+def get_shapes(node, intermediate=False, exclusive=False):
+    """Get the shapes of given node.
+
+    Args:
+        node (str): Node to query its shapes
+        intermediate (bool): Get intermediate shapes when True.
+        exclusive (bool): Only return the intermediate shapes if True.
+            Please note that the intermediate flag must be True as well.
+
+    Returns:
+        list: The shapes found below given node.
+
+    """
+    # if given node is a list, assume first element
+    if isinstance(node, list):
+        node = node[0]
+        LOG.info("Given node is a list. Using first element.")
+
+    # return as list if given node is already a shape
+    if cmds.objectType(node, isAType="shape"):
+        return [node]
+
+    # query shapes
+    shapes = cmds.listRelatives(
+        node, shapes=True, type="deformableShape", path=True
+    )
+    shapes = shapes or []
+
+    # separate shapes orig
+    orig = []
+    for each in list(shapes):  # duplicated `shapes` object to remove safely
+        if cmds.ls(each, intermediateObjects=True):
+            orig.append(each)
+            shapes.remove(each)
+
+    if not intermediate:
+        return shapes
+
+    if exclusive:
+        return orig
+
+    return shapes + orig
 
 
 def update_plug(source_shape, target_shape):
