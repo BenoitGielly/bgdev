@@ -14,6 +14,25 @@ from maya.api import OpenMaya
 LOG = logging.getLogger(__name__)
 
 
+def duplicate_mesh_callback():
+    """Callback"""
+    for each in cmds.ls(selection=True):
+        duplicate_mesh(each, name=each + "_duplicate")
+
+
+def duplicate_mesh(geometry, name="temp"):
+    """Duplicate given geometry using Maya API."""
+    root = cmds.createNode("transform", name=name)
+    parent_selection = OpenMaya.MSelectionList()
+    parent_selection.add(root)
+    mesh_selection = OpenMaya.MSelectionList()
+    mesh_selection.add(geometry)
+    mesh = OpenMaya.MFnMesh(mesh_selection.getDagPath(0))
+    mesh.copy(mesh.object(), parent_selection.getDependNode(0))
+    mesh.setName(name + "Shape")
+    return root
+
+
 def mesh_combine_and_keep(nodes=None, visible=True):
     """Combine meshes and keep the original."""
     nodes = nodes or cmds.ls(selection=True)

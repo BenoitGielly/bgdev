@@ -228,67 +228,54 @@ Rigging:
               source: |
                   from maya import mel
                   mel.eval('ParentConstraint')
-              menu:
-                  Options...:
-                      source: |
-                          from maya import mel
-                          mel.eval('ParentConstraintOptions')
+              alt_source: |
+                  from maya import mel
+                  mel.eval('ParentConstraintOptions')
         - Point constraint:
               image: posConstraint.png
               label: Point
               source: |
                   from maya import mel
                   mel.eval('PointConstraint')
-              menu:
-                  Options...:
-                      source: |
-                          from maya import mel
-                          mel.eval('PointConstraintOptions')
+              alt_source: |
+                  from maya import mel
+                  mel.eval('PointConstraintOptions')
         - Orient constraint:
               image: orientConstraint.png
               label: Orient
               source: |
                   from maya import mel
                   mel.eval('OrientConstraint')
-              menu:
-                  Options...:
-                      source: |
-                          from maya import mel
-                          mel.eval('OrientConstraintOptions')
+              alt_source: |
+                  from maya import mel
+                  mel.eval('OrientConstraintOptions')
         - Aim constraint:
               image: aimConstraint.png
               label: Aim
               source: |
                   from maya import mel
                   mel.eval('AimConstraint')
-              menu:
-                  Options...:
-                      type: menu
-                      source: |
-                          from maya import mel
-                          mel.eval('AimConstraintOptions')
+              alt_source: |
+                  from maya import mel
+                  mel.eval('AimConstraintOptions')
         - Scale constraint:
               image: scaleConstraint.png
               label: Scale
               source: |
                   from maya import mel
                   mel.eval('ScaleConstraint')
-              menu:
-                  Options...:
-                      source: |
-                          from maya import mel
-                          mel.eval('ScaleConstraintOptions')
+              alt_source: |
+                  from maya import mel
+                  mel.eval('ScaleConstraintOptions')
         - Pole Vector constraint:
               image: poleVectorConstraint.png
               label: Pole Vect
               source: |
                   from maya import mel
                   mel.eval('PoleVectorConstraint')
-              menu:
-                  Options...:
-                      source: |
-                          from maya import mel
-                          mel.eval('PoleVectorConstraintOptions')
+              alt_source: |
+                  from maya import mel
+                  mel.eval('PoleVectorConstraintOptions')
 Scripts:
     visible: true
     type: flow
@@ -296,8 +283,10 @@ Scripts:
         - jointSize:
               image: ../jointSize.png
               source: |
-                  import bgdev.ui.joint
-                  bgdev.ui.joint.display_joint_size_window()
+                  from maya import mel
+                  mel.eval('JdsWin')
+                  #import bgdev.ui.joint
+                  #bgdev.ui.joint.display_joint_size_window()
         - LRASelected:
               image: ../LRASelected.png
               source: |
@@ -306,59 +295,48 @@ Scripts:
         - onJointOrient:
               image: ../onJointOrient.png
               source: |
-                  import bgdev.utils.scripts as sk
-                  sk.showJointOrient(True)
+                  import bgdev.utils.scripts
+                  bgdev.utils.scripts.show_joint_orient(True)
         - offJointOrient:
               image: ../offJointOrient.png
               source: |
-                  import bgdev.utils.scripts as sk
-                  sk.showJointOrient(False)
-        - hashRename:
-              image: ../hashRename.png
-              source: |
-                  import bgdev.tools.renamer.core as rm
-                  x = rm.Renamer()
-                  x.show()
+                  import bgdev.utils.scripts
+                  bgdev.utils.scripts.show_joint_orient(False)
         - quickDistance:
               image: distanceDim.png
               source: |
-                  import bgdev.utils.scripts as sk
-                  reload(sk)
-                  sk.quick_distance()
+                  import bgdev.utils.scripts
+                  bgdev.utils.scripts.quick_distance()
         - mirrorPos:
               image: mirrorSkinWeight.png
               source: |
-                  import bgdev.utils.scripts as sk
-                  sk.mirror_position()
-              menu:
-                  Options...:
-                      source: |
-                          import bgdev.utils.scripts as sk
-                          sk.mirror_position(True)
+                  import bgdev.utils.scripts
+                  bgdev.utils.scripts.mirror_position()
+              alt_source: |
+                  import bgdev.utils.scripts
+                  bgdev.utils.scripts.mirror_position(True)
         - alignFingers:
               image: ../finger.png
               source: |
-                  import bgdev.utils.scripts as sk
-                  reload(sk)
-                  sk.align_fingers()
-              menu:
-                  Options...:
-                      source: |
-                          import bgdev.utils.scripts as sk
-                          reload(sk)
-                          sk.align_fingers(gui=True)
+                  import bgdev.utils.scripts
+                  bgdev.utils.scripts.align_fingers()
+              alt_source: |
+                  import bgdev.utils.scripts
+                  bgdev.utils.scripts.align_fingers(gui=True)
         - camClipPlanes:
               image: cameraAim.png
               source: |
-                  import bgdev.utils.scripts as sk
-                  reload(sk)
-                  sk.show_cam_clip_planes()
+                  import bgdev.utils.scripts
+                  bgdev.utils.scripts.set_default_clip_plane()
               menu:
-                  Default clip planes:
+                  Change default clip planes:
                       source: |
-                          import bgdev.utils.scripts as sk
-                          reload(sk)
-                          sk.set_default_clip_plane()
+                          import bgdev.utils.scripts
+                          bgdev.utils.scripts.change_default_clip_plane()
+                  Show clip planes:
+                      source: |
+                          import bgdev.utils.scripts
+                          bgdev.utils.scripts.show_cam_clip_planes()
         - selectionLocator:
               image: ../locatorSelection.png
               source: |
@@ -454,6 +432,11 @@ Scripts:
                               _srcs = [_tgt]
                           for each in _srcs:
                               each.setMatrix(_tgt.getMatrix(worldSpace=1), worldSpace=1)
+Work:
+    visible: true
+    type: json
+    env: TOOLBAR_WORK_PATH
+    category: Work
 Controlers:
     visible: false
     type: flow
@@ -554,8 +537,8 @@ Controlers:
               source: |
                   import bgdev.utils.controler
                   bgdev.utils.controler.create_control("stickball_ctrl", variant=1)
-Curves:
-    visible: false
+Nurbs:
+    visible: true
     type: flow
     content:
         - circle:
@@ -564,7 +547,7 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('CreateNURBSCircle')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreateNURBSCircleOptions')
         - square:
@@ -579,13 +562,22 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('curve -d 1 -p -1 0 1 -p 0 0 -1 -p 1 0 1 -p -1 0 1 -k 0 -k 2.236068 -k 4.472136 -k 6.472136 ')
+        - plane:
+              type: button
+              image: plane.png
+              source: |
+                  from maya import mel
+                  mel.eval('nurbsPlane -p 0 0 0 -ax 0 1 0 -w 1 -lr 1 -d 3 -u 1 -v 1 -ch 1')
+              alt_source: |
+                  from maya import mel
+                  mel.eval('CreateNURBSPlaneOptions')
         - attachCurves:
               type: button
               image: attachCurves.png
               source: |
                   from maya import mel
                   mel.eval('AttachCurve')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('AttachCurveOptions')
         - curveAddPoint:
@@ -594,7 +586,7 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('AddPointsTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('AddPointsTool')
         - curveCV:
@@ -603,7 +595,7 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('CVCurveTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CVCurveToolOptions')
         - curveEP:
@@ -612,7 +604,7 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('EPCurveTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('EPCurveToolOptions')
         - detachCurve:
@@ -621,7 +613,7 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('DetachCurve')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('DetachCurveOptions')
         - insertKnot:
@@ -630,7 +622,7 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('InsertKnot')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('InsertKnotOptions')
         - offsetCurve:
@@ -639,7 +631,7 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('OffsetCurve')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('OffsetCurveOptions')
         - pencilCurve:
@@ -648,7 +640,7 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('PencilCurveTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('PencilCurveToolOptions')
         - rebuildCurve:
@@ -657,7 +649,7 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('RebuildCurve')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('RebuildCurveOptions')
         - threePointArc:
@@ -666,20 +658,25 @@ Curves:
               source: |
                   from maya import mel
                   mel.eval('ThreePointArcTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('ThreePointArcToolOptions')
 Polygons:
     visible: true
     type: flow
     content:
+        - Duplicate Mesh:
+              image: polyDuplicateFacet.png
+              source: |
+                  import bgdev.utils.mesh
+                  bgdev.utils.mesh.duplicate_mesh_callback()
         - polyPlane:
               type: button
               image: polyMesh.png
               source: |
                   from maya import mel
                   mel.eval('CreatePolygonPlane')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreatePolygonPlaneOptions')
         - polySphere:
@@ -688,7 +685,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('CreatePolygonSphere')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreatePolygonSphereOptions')
         - polyCube:
@@ -697,7 +694,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('CreatePolygonCube')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreatePolygonCubeOptions')
         - polyCylinder:
@@ -706,7 +703,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('CreatePolygonCylinder')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreatePolygonCylinderOptions')
         - polyPipe:
@@ -715,7 +712,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('CreatePolygonPipe')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreatePolygonPipeOptions')
         - polyPyramid:
@@ -724,7 +721,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('CreatePolygonPyramid')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreatePolygonPyramidOptions')
         - polyCone:
@@ -733,7 +730,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('CreatePolygonCone')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreatePolygonConeOptions')
         - polyTorus:
@@ -742,7 +739,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('CreatePolygonTorus')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreatePolygonTorusOptions')
         - polyAppendFace:
@@ -751,7 +748,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('AppendToPolygonTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('AppendToPolygonToolOptions')
         - polyCombine:
@@ -760,7 +757,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('CombinePolygons')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CombinePolygonsOptions')
         - polyCreateFace:
@@ -769,7 +766,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('CreatePolygonTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreatePolygonToolOptions')
         - polyCut:
@@ -778,7 +775,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('CutPolygon')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CutPolygonOptions')
         - polyExtract:
@@ -787,7 +784,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('ExtractFace')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('ExtractFaceOptions')
         - polyExtrudeFace:
@@ -796,7 +793,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('PolyExtrude')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('PolyExtrudeOptions')
         - polyMirrorGeometry:
@@ -805,7 +802,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('MirrorPolygonGeometry')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('MirrorPolygonGeometryOptions')
         - polyPoke:
@@ -814,7 +811,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('PokePolygon')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('PokePolygonOptions')
         - polySculpt:
@@ -823,7 +820,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('SculptGeometryTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('SculptGeometryToolOptions')
         - polySeparate:
@@ -832,7 +829,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('SeparatePolygon')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('SeparatePolygonOptions')
         - polySmooth:
@@ -841,7 +838,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('SmoothPolygon')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('SmoothPolygonOptions')
         - polySplitEdgeRing:
@@ -850,7 +847,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('SplitEdgeRingTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('SplitEdgeRingToolOptions')
         - polySplitFace:
@@ -859,7 +856,7 @@ Polygons:
               source: |
                   from maya import mel
                   mel.eval('InteractiveSplitTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('InteractiveSplitToolOptions')
 Deformers:
@@ -872,7 +869,7 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('CreateBlendShape')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreateBlendShapeOptions')
         - cluster:
@@ -881,7 +878,7 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('newCluster " -envelope 1"')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreateClusterOptions')
         - lattice:
@@ -890,7 +887,7 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('CreateLattice')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreateLatticeOptions')
         - wrap:
@@ -899,7 +896,7 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('CreateWrap')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('CreateWrapOptions')
         - wire:
@@ -908,7 +905,7 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('WireTool')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('WireToolOptions')
         - bendNLD:
@@ -917,7 +914,7 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('Bend')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('BendOptions')
         - squashNLD:
@@ -926,7 +923,7 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('Squash')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('SquashOptions')
         - twistNLD:
@@ -935,7 +932,7 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('Twist')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('TwistOptions')
         - waveNLD:
@@ -944,7 +941,7 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('Wave')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('WaveOptions')
         - sineNLD:
@@ -953,7 +950,7 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('Sine')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('SineOptions')
         - flareNLD:
@@ -962,6 +959,6 @@ Deformers:
               source: |
                   from maya import mel
                   mel.eval('Flare')
-              script2: |
+              alt_source: |
                   from maya import mel
                   mel.eval('FlareOptions')

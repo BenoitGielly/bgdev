@@ -3,6 +3,8 @@
 :created: 09/11/2018
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+from __future__ import absolute_import
+
 from collections import OrderedDict
 from functools import partial
 import logging
@@ -65,7 +67,7 @@ class BaseToolbar(QtWidgets.QDialog):
             self.PROJECT_TABS_FOLDER,
             self.USER_TABS_FOLDER,
         ]
-        self.data_folders.extend([x for x in self.CUSTOM_TABS_FOLDER if x])
+        # self.data_folders.extend([x for x in self.CUSTOM_TABS_FOLDER if x])
 
         # create the toolbar folder if not exising
         if not os.path.exists(self.USER_TABS_FOLDER):
@@ -88,7 +90,7 @@ class BaseToolbar(QtWidgets.QDialog):
         self.setWindowTitle("Toolbar")
         self.setup_ui()
         self.adjustSize()
-        self.setMinimumWidth(150)
+        self.setMinimumWidth(197)
 
     def get_data_files(self):
         """Find data files based on existing folders."""
@@ -118,7 +120,7 @@ class BaseToolbar(QtWidgets.QDialog):
 
         # create header widget
         self.header_widget = ui.Header()
-        self.header_widget.label.setText("Toolbar")
+        self.header_widget.label.setText(cfg.LABEL)
         self.header_widget.refresh_btn.clicked.connect(self.refresh_content)
         self.header_widget.settings_btn.clicked.connect(
             partial(LOG.warn, "Settings window not yet implemented.")
@@ -223,17 +225,22 @@ class BaseToolbar(QtWidgets.QDialog):
         self.group_boxes = []
         for title, group_data in data.items():
 
-            # extract settings for group_boxes
-            visible = group_data.pop("visible", True)
-            type_ = group_data.get("type")
-            color = group_data.get("color", settings.get("color"))
-            height = group_data.get("height")
+            type_ = group_data.get("type", "")
 
-            # continue if type is not specified
+            # parse specific JSON type
+            if type_.lower() == "json":
+                type_, group_data = self.extract_json_type(group_data)
+
+            # stop here if type is not specified
             if not type_:
                 msg = "The 'type' key is missing for %r category. skipped..."
                 LOG.warning(msg, title)
                 continue
+
+            # extract settings for group_boxes
+            visible = group_data.pop("visible", True)
+            color = group_data.get("color", settings.get("color"))
+            height = group_data.get("height")
 
             # create group box
             group_box = ui.GroupBox(title, visible, color, height)
@@ -264,6 +271,25 @@ class BaseToolbar(QtWidgets.QDialog):
         scroll_area.layout.setStretch(index, 1)
 
         return tab_content_widget
+
+    def extract_json_type(self, data):
+        """Extract custom data from an external json file.
+
+        Args:
+            data (dict): The current group data to override.
+
+        Returns:
+            dict: The updated group data with the external JSON file.
+        """
+        category = data.get("category")
+        env = data.get("env")
+        data_file = os.environ.get(env) or data.get("path")
+
+        new_data = utils.yaml_load(data_file, ordered=True)
+        category_data = new_data.get(category, {})
+        type_ = category_data.get("type")
+
+        return type_, category_data
 
     def create_custom_widget(self, source):
         """Create a custom widget from source code.

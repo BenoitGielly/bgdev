@@ -6,14 +6,10 @@
 from functools import partial
 import logging
 from math import sin, sqrt
-import os
-import time
 
 from PySide2 import QtWidgets
 from maya import cmds
 from maya.api import OpenMaya
-import pymel.core as pm
-import pymel.core.datatypes as dt
 
 LOG = logging.getLogger(__name__)
 
@@ -160,65 +156,69 @@ def simple_snap(srt=None):
 
 def mirror_position(selected=False):
     """Mirror selected along world Z+."""
-    # get selection
-    selection = pm.selected()
+    selection = cmds.ls(selection=True)
 
-    # get and set matrix
     for each in selection:
-        matrix = each.wm[0].get()
-        inverse = dt.Matrix(
-            [-1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]
+        matrix = cmds.xform(each, query=True, matrix=True, worldSpace=True)
+        inverse = OpenMaya.MMatrix(
+            [-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
         )
-        result = matrix * inverse
-        node = pm.spaceLocator(name=each + "_loc") if not selected else each
-        node.setMatrix(result, worldSpace=True)
+        result = OpenMaya.MMatrix(matrix) * inverse
+        node = each if selected else cmds.spaceLocator(name=each + "_loc")[0]
+        cmds.xform(node, matrix=result, worldSpace=True)
 
 
 def quick_distance():
     """Get distance between two nodes."""
-    sel = pm.selected()
-    pos = [
-        pm.xform(x, query=True, rotatePivot=True, worldSpace=True) for x in sel
-    ]
-    dist = pm.distanceDimension(startPoint=pos[0], endPoint=pos[-1])
-    pm.parentConstraint(sel[0], dist.inputs()[0], maintainOffset=True)
-    pm.parentConstraint(sel[-1], dist.inputs()[-1], maintainOffset=True)
+    attributes = ["startPoint", "endPoint"]
 
+    selection = cmds.ls(selection=True)
+    if len(selection) != 2:
+        return cmds.warning("Select 2 nodes")
 
-def time_me(func):
-    """Use this decorator to time functions execution."""
-
-    def timer(*args, **kwargs):  # pylint: disable=missing-docstring
-        start = time.time()
-        result = func(*args, **kwargs)
-        delta = time.time() - start
-
-        nice_args = ", ".join(["%r" % x for x in args])
-        nice_kwargs = ", ".join(
-            ["%s=%s" % (k, v) for k, v in kwargs.iteritems()]
+    points = {}
+    for each, key in zip(selection, attributes):
+        points[key] = cmds.xform(
+            each, query=True, rotatePivot=True, worldSpace=True
         )
-        if nice_args and nice_kwargs:
-            args = "({}, {})".format(nice_args, nice_kwargs)
-        elif nice_args:
-            args = "({})".format(nice_args)
-        elif nice_kwargs:
-            args = "({})".format(nice_kwargs)
-        else:
-            args = "()"
-        LOG.info(
-            '    > Timer: "%s%s" executed in %.3f sec',
-            func.__name__,
-            args,
-            delta,
-        )
+    distance = cmds.distanceDimension(**points)
+    for each, attr in zip(selection, attributes):
+        target = cmds.listConnections("{}.{}".format(distance, attr))[0]
+        if each != target:
+            cmds.parentConstraint(each, target, maintainOffset=True)
 
-        return result
 
-    return timer
+def show_joint_orient(value=True):
+    """Display jointOrient attributes in channel box."""
+    for each in cmds.ls(type="joint"):
+        for plug in [each + ".jo" + x for x in "xyz"]:
+            cmds.setAttr(plug, channelBox=value)
+
+
+def find_bad_meshes():
+    """Find meshes with incorrect amount of vertices."""
+    bad_meshes = []
+    sel_list = OpenMaya.MGlobal.getSelectionListByName("*_geo")
+    sel_iter = OpenMaya.MItSelectionList(sel_list)
+    while not sel_iter.isDone():
+        mesh = OpenMaya.MFnMesh(sel_iter.getComponent()[0])
+        num_vertices = mesh.numVertices
+        num_faces = mesh.numPolygons
+        if num_vertices > num_faces * 4:
+            bad_meshes.append(mesh.fullPathName())
+        sel_iter.next()
+
+    if bad_meshes:
+        cmds.sets(bad_meshes, name="BAD_MESHES")
+        cmds.error("BAD MESHES FOUND!")
+    else:
+        cmds.warning("Scene seems clean, well done!")
 
 
 def get_vectors_dialog():
     """Query aim and up vectors using a LayoutPromptDialog."""
+    import pymel.core as pm
+
     # get the dialog's formLayout.
     form = pm.setParent(query=True)
 
@@ -248,7 +248,10 @@ def get_vectors_dialog():
 def align_fingers(
     nodes=None, aim_vector=(1, 0, 0), up_vector=(0, 1, 0), gui=False
 ):
-    """Align selected locators based on first and last plane (use for fingers)."""
+    """Align selection based on first and last plane (use for fingers)."""
+    import pymel.core as pm
+    import pymel.core.datatypes as dt
+
     # pylint: disable=too-many-locals, eval-used
     if gui is True:
         value = pm.layoutDialog(uiScript=get_vectors_dialog)
@@ -360,75 +363,35 @@ def align_fingers(
 
 def show_cam_clip_planes():
     """Turn nearClip and farClip planes visible in the CB for all cameras."""
-    for camera in pm.ls(type="camera"):
-        camera.nearClipPlane.showInChannelBox(True)
-        camera.farClipPlane.showInChannelBox(True)
+    for camera in cmds.ls(type="camera"):
+        cmds.setAttr(camera + ".nearClipPlane", channelBox=True)
+        cmds.setAttr(camera + ".farClipPlane", channelBox=True)
 
     # select the perspCamera
-    if pm.objExists("persp"):
-        pm.select("persp")
-
-
-def set_near_clip_plane():
-    """Set nearClipPlane to 1."""
-    for camera in pm.ls(type="camera"):
-        if (
-            not camera.nearClipPlane.isLocked()
-            and not camera.nearClipPlane.isConnected()
-        ):
-            camera.nearClipPlane.set(0.01)
-            camera.farClipPlane.set(100000)
-
-
-def logging_time():
-    """Print the logging time."""
-    _file, local_dict = "~/bin/Linux64/logtime", {}
-    if os.path.isfile(_file):
-        execfile(_file, globals(), local_dict)
-        msg = local_dict["logged_in_time"]()
-    else:
-        import datetime
-        import subprocess
-
-        hours1, minutes1 = map(
-            int, (subprocess.check_output("who").split()[3].split(":"))
-        )
-        hours2, minutes2 = map(
-            int, datetime.datetime.now().strftime("%H:%M").split(":")
-        )
-        delta = (hours2 * 60 + minutes2) - (hours1 * 60 + minutes1)
-        hours, minutes = delta / 60, delta % 60
-
-        msg = "%s - " % datetime.datetime.today().strftime("%a %d %b")
-        msg += "Arrived at : %sh%02d" % (hours1, minutes1)
-        msg += "\tCurrent time : %sh%02d" % (hours2, minutes2)
-        msg += "\tTime logged in : %sh%02d" % (hours, minutes)
-
-    return cmds.warning(msg)
-
-
-def find_bad_meshes():
-    """Find meshes with incorrect amount of vertices."""
-    bad_meshes = []
-    sel_list = OpenMaya.MGlobal.getSelectionListByName("*_geo")
-    sel_iter = OpenMaya.MItSelectionList(sel_list)
-    while not sel_iter.isDone():
-        mesh = OpenMaya.MFnMesh(sel_iter.getComponent()[0])
-        num_vertices = mesh.numVertices
-        num_faces = mesh.numPolygons
-        if num_vertices > num_faces * 4:
-            bad_meshes.append(mesh.fullPathName())
-        sel_iter.next()
-
-    if bad_meshes:
-        cmds.sets(bad_meshes, name="BAD_MESHES")
-        cmds.error("BAD MESHES FOUND!")
-    else:
-        cmds.warning("Scene seems clean, well done!")
+    if cmds.objExists("persp"):
+        cmds.select("persp")
 
 
 def set_default_clip_plane():
-    """Create a quick GUI to change de camera clipPlane values option vars."""
+    """Set camera clipPlanes to default values."""
+    values = [
+        cmds.optionVar(query="defaultCameraNearClipValue"),
+        cmds.optionVar(query="defaultCameraFarClipValue"),
+    ]
+    for camera in cmds.ls(type="camera"):
+        for attr in ["nearClipPlane", "farClipPlane"]:
+            plug = "{}.{}".format(camera, attr)
+            value = values[0] if "near" in attr else values[-1]
+            if cmds.getAttr(plug, settable=True):
+                cmds.setAttr(plug, value)
+
+    show_cam_clip_planes()
+
+
+def change_default_clip_plane():
+    """Create a quick GUI to change the camera clipPlane values option vars."""
+    import pymel.core as pm
+
     # methods
     def set_values(widget, near, far):
         """Set the near and far clip values."""
@@ -480,12 +443,4 @@ def set_default_clip_plane():
     # signals
     ok_btn.clicked.connect(partial(set_values, widget, near_field, far_field))
     cl_btn.clicked.connect(widget.close)
-
     widget.show()
-
-
-def show_joint_orient(value=True):
-    """Display jointOrient attributes in channel box."""
-    for each in pm.ls(type="joint"):
-        for attr in ["jo" + x for x in "xyz"]:
-            each.attr(attr).showInChannelBox(value)

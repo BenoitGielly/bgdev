@@ -11,9 +11,9 @@ import re
 from maya import cmds, mel
 
 try:
-    import urllib
-except ImportError:
     import urllib2 as urllib
+except ImportError:
+    import urllib
 
 
 LOG = logging.getLogger(__name__)
@@ -41,6 +41,21 @@ def get_maya_urls():
     data = {}
     for each in commands:
         data[each] = url.format(each)
+    return data
+
+
+def get_local_url():
+    """Generate a table for each commands from the local documentation.
+
+    Returns:
+        dict: Generates a {command:url} dictionnary.
+    """
+    version = cmds.about(majorVersion=True)
+    path = "/apps/Linux64/aw/maya{}_docs/docs/CommandsPython".format(version)
+    data = {}
+    for each in os.listdir(path):
+        name = os.path.splitext(each)[0]
+        data[name] = os.path.join(path, each)
     return data
 
 
@@ -154,7 +169,9 @@ def generate_pypredef(module, outdir=None, doclink=True):
     filetext = ""
     # use the cmds.help method if extracting maya commands
     if module.__name__ == "maya.cmds":
-        maya_urls = get_maya_urls() if doclink else {}
+        maya_urls = {}
+        if doclink:
+            maya_urls = get_maya_urls() or get_local_url()
         commands = sorted(cmds.help("*", list=True))
         for each in commands:
             if hasattr(cmds, each) and not iskeyword(each):
@@ -183,7 +200,7 @@ def generate_pypredef(module, outdir=None, doclink=True):
         for each in sorted(dir(module)):
             if bool(mel.eval("exists " + each)):
                 strip = mel.eval("help %s" % each).strip("\n")
-                strip = strip if not "\n" in strip else strip + "\n"
+                strip = strip if "\n" not in strip else strip + "\n"
                 if len(strip) > 10000:
                     continue
                 docstring = '"""{}"""\nreturn args, kwargs\n'.format(strip)

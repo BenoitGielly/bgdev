@@ -1,3 +1,9 @@
+CrossCopy:
+    visible: true
+    type: custom
+    source: |
+        import bgdev.tools.crosscopy
+        return bgdev.tools.crosscopy.CrossCopyUI
 Renamer:
     visible: false
     type: custom

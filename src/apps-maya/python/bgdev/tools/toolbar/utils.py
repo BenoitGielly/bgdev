@@ -3,6 +3,8 @@
 :created: 12/11/2018
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+from __future__ import absolute_import
+
 from collections import OrderedDict
 import importlib
 import logging
@@ -11,6 +13,7 @@ import pkgutil
 import sys
 
 from PySide2 import QtCore
+import six
 import yaml
 import yaml.representer
 
@@ -51,6 +54,8 @@ def modpath_from_file(filename):
     filename = os.path.realpath(os.path.expanduser(filename))
     base = os.path.splitext(filename)[0]
     for path in sys.path:
+        if not path:
+            continue
         path = os.path.realpath(os.path.expanduser(path))
         path = os.path.normcase(os.path.abspath(path))
         if path and os.path.normcase(base).startswith(path):
@@ -116,6 +121,7 @@ def check_image(icon, normalized=True):
         icon_paths.insert(0, icon_folder)
 
     # check for relatives path icons
+    baseicon = icon
     if icon.startswith(".."):
         for each in icon_paths:
             _icon = os.path.join(each, icon[3:])
@@ -127,13 +133,27 @@ def check_image(icon, normalized=True):
 
     # when icon file doesn't seem to exist
     if not QtCore.QFile.exists(icon):
-        icon = "../default_icon.png"
-        icon = os.path.abspath(os.path.join(icon_folder, icon[1:]))
+        icon = search_icon_in_path(baseicon)
+        if not icon:
+            icon = "../default_icon.png"
+            icon = os.path.abspath(os.path.join(icon_folder, icon[1:]))
 
     # normalize the path for windows
     icon = icon.replace(os.sep, "/") if normalized else icon
 
     return icon
+
+
+def search_icon_in_path(name):
+    """Search icon in XGMLANGPATH env variable."""
+    paths = os.environ.get("XBMLANGPATH").split(os.pathsep)
+    for each in paths:
+        if not each.endswith("%B"):
+            continue
+        icon = each.replace("%B", name)
+        if os.path.exists(icon):
+            return icon
+    return ""
 
 
 def create_module_callback(source):
@@ -189,7 +209,7 @@ def yaml_load(path, ordered=False, **kwargs):
 
 
 class Loader(yaml.Loader):
-    """Custom YAML Loader to load data in an OrderedDict."""
+    """Create a custom YAML Loader to load data in an OrderedDict."""
 
     def __init__(self, *args, **kwargs):
         super(Loader, self).__init__(*args, **kwargs)
@@ -226,14 +246,14 @@ def yaml_dump(data, path, ordered=False, **kwargs):
 
 
 class Dumper(yaml.Dumper):
-    """Custom YAML Dumper to dump data from an OrderedDict."""
+    """Create a custom YAML Dumper to dump data from an OrderedDict."""
 
     def __init__(self, *args, **kwargs):
         super(Dumper, self).__init__(*args, **kwargs)
         rpz = yaml.representer.SafeRepresenter
         self.add_representer(OrderedDict, self.dict_representer)
         self.add_representer(str, rpz.represent_str)
-        self.add_representer(unicode, rpz.represent_unicode)
+        self.add_representer(six.string_types, rpz.represent_unicode)
 
     @staticmethod
     def dict_representer(dumper, data):

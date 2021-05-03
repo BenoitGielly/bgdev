@@ -4,8 +4,11 @@
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
 import cProfile
+import datetime
 import logging
 import os
+import pstats
+import time
 
 from maya import cmds, mel
 from maya.debug import emPerformanceTest  # type: ignore
@@ -142,33 +145,69 @@ class Profiler(object):
     Example:
         ::
 
-            import bgdev.tools.performance
-            profiler = bgdev.tools.performance.Profiler()
+            from bgdev.tools.performance import Profiler()
+
+            # use as an instanciated object
+            profiler = Profiler()
             profiler.start()
-            # run python code
+            >>> run python code
             profiler.stop()
+
+            # use as a context manager
+            with Profiler(sort="tottime", depth=10) as profiler:
+                >>> run code
+
+            # print stats
+            profiler.stats("cumulative", depth=10)
+
     """
 
-    def __init__(self):
-        self.profiler = cProfile.Profile(subcalls=False)
+    def __init__(self, timer=True, stats=True, sort="cumtime", depth=20):
+        self._use_timer = timer
+        self._use_stats = stats
+        self._sort = sort
+        self._depth = depth
+
+        self.profiler = cProfile.Profile()
+        self.pstats = None
+        self.timer = 0
+
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.stop()
+        self.stats()
 
     def start(self):
         """Enable the profiler."""
+        self.timer = time.time()
         self.profiler.enable()
 
-    def stop(self, sort="time"):
-        """Stop the profiler and print restult.
-
-        Args:
-            sort(str): Sort the stats with given value.
-        """
+    def stop(self):
+        """Stop the profiler."""
         self.profiler.disable()
-        self.stats(sort)
+        self.timer = time.time() - self.timer
+        if self._use_stats:
+            self.pstats = pstats.Stats(self.profiler)
+        if self._use_timer:
+            self.get_timer()
 
-    def stats(self, sort="tottime"):
-        """Print the profiler stats.
+    def get_timer(self):
+        """Get execution time."""
+        result = datetime.timedelta(seconds=int(self.timer))
+        message = "{}min {}secs".format(*str(result).split(":")[1:])
+        LOG.info("Executed in %.4s seconds (%s)", self.timer, message)
+
+    def stats(self, sort=None, depth=None):
+        """Print profiler's stats.
 
         Args:
-            sort(str): Sort the stats with given value.
+            sort (str): Sort the stats with given value.
+            depth (int): Maximum entries to print from the stat table.
         """
-        self.profiler.print_stats(sort=sort)
+        if self.pstats:
+            sort = sort or self._sort
+            depth = depth or self._depth
+            self.pstats.sort_stats(sort).print_stats(depth)

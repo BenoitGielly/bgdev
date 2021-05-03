@@ -359,6 +359,8 @@ class PushButton(QtWidgets.QPushButton):
         }
     """
 
+    alt_clicked = QtCore.Signal()
+
     def __init__(self, name="", parent=None, settings=None):
         super(PushButton, self).__init__(parent)
 
@@ -379,8 +381,21 @@ class PushButton(QtWidgets.QPushButton):
         command = self._settings.get("source", "")
         self.clicked.connect(partial(self.set_command, command))
 
+        alt_command = self._settings.get("alt_source", "")
+        self.alt_clicked.connect(partial(self.set_command, alt_command))
+
     def mousePressEvent(self, event):
         """Run menu when right-click button is pressed instead of clicked."""
+        modifiers = QtWidgets.QApplication.queryKeyboardModifiers()
+        is_valid = modifiers in (
+            QtCore.Qt.AltModifier,
+            QtCore.Qt.ControlModifier,
+            QtCore.Qt.ShiftModifier,
+        )
+        if event.button() == QtCore.Qt.MouseButton.LeftButton and is_valid:
+            self.alt_clicked.emit()
+            return
+
         super(PushButton, self).mousePressEvent(event)
         if event.button() == QtCore.Qt.MouseButton.RightButton:
             self.context_menu()
