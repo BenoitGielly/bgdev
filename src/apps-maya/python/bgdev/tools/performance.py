@@ -162,7 +162,7 @@ class Profiler(object):
 
     """
 
-    def __init__(self, timer=True, stats=True, sort="cumtime", depth=20):
+    def __init__(self, timer=True, stats=True, sort="tottime", depth=8):
         self._use_timer = timer
         self._use_stats = stats
         self._sort = sort
@@ -171,34 +171,55 @@ class Profiler(object):
         self.profiler = cProfile.Profile()
         self.pstats = None
         self.timer = 0
+        self.start_time = 0
+        self.step_time = 0
 
     def __enter__(self):
+        """Initialise the timer on __enter__."""
         self.start()
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
+        """Stop timer and display cProfiler stats."""
         self.stop()
         self.stats()
 
     def start(self):
         """Enable the profiler."""
-        self.timer = time.time()
+        self.start_time = time.time()
+        self.step_time = self.start_time
         self.profiler.enable()
+
+    def step(self, message=None, running=False):
+        """Display a timer step."""
+        running_time = time.time() - self.start_time
+        interval_time = time.time() - self.step_time
+        self.step_time = time.time()
+
+        msg = message or "Step timer is:"
+        self.display_timer(interval_time, msg)
+
+        # display running total
+        if running:
+            msg = "Running total so far:"
+            self.display_timer(running_time, message=msg)
 
     def stop(self):
         """Stop the profiler."""
         self.profiler.disable()
-        self.timer = time.time() - self.timer
+        self.timer = time.time() - self.start_time
         if self._use_stats:
             self.pstats = pstats.Stats(self.profiler)
         if self._use_timer:
-            self.get_timer()
+            self.display_timer(self.timer)
 
-    def get_timer(self):
+    @staticmethod
+    def display_timer(timer, message=""):
         """Get execution time."""
-        result = datetime.timedelta(seconds=int(self.timer))
-        message = "{}min {}secs".format(*str(result).split(":")[1:])
-        LOG.info("Executed in %.4s seconds (%s)", self.timer, message)
+        result = datetime.timedelta(seconds=int(timer))
+        timecode = "{}min {}secs".format(*str(result).split(":")[1:])
+        message = message or "Executed in"
+        LOG.info("%s %.4s seconds (%s)", message, timer, timecode)
 
     def stats(self, sort=None, depth=None):
         """Print profiler's stats.
