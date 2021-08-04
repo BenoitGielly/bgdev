@@ -7,30 +7,12 @@ from __future__ import absolute_import
 
 import logging
 
-import bgdev.utils.decorator
 from maya import cmds
 from maya.api import OpenMaya
 
+import bgdev.utils.decorator
+
 LOG = logging.getLogger(__name__)
-
-
-def duplicate_mesh_callback():
-    """Callback"""
-    for each in cmds.ls(selection=True):
-        duplicate_mesh(each, name=each + "_duplicate")
-
-
-def duplicate_mesh(geometry, name="temp"):
-    """Duplicate given geometry using Maya API."""
-    root = cmds.createNode("transform", name=name)
-    parent_selection = OpenMaya.MSelectionList()
-    parent_selection.add(root)
-    mesh_selection = OpenMaya.MSelectionList()
-    mesh_selection.add(geometry)
-    mesh = OpenMaya.MFnMesh(mesh_selection.getDagPath(0))
-    mesh.copy(mesh.object(), parent_selection.getDependNode(0))
-    mesh.setName(name + "Shape")
-    return root
 
 
 def mesh_combine_and_keep(nodes=None, visible=True):
@@ -125,6 +107,5 @@ def find_phantom_vertices(fix=False):
 
         face_id = cmds.polyEvaluate(each, face=True) - 1
         cmds.delete(
-            "{0}.f[{1}]".format(each, face_id),
-            constructionHistory=False,
+            "{0}.f[{1}]".format(each, face_id), constructionHistory=False,
         )

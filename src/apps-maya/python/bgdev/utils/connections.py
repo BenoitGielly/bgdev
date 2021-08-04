@@ -5,7 +5,22 @@
 from __future__ import print_function
 
 from maya import cmds
-import pymel.core as pm
+from maya.api import OpenMaya
+
+
+def disconnect_plugs(node, source=True, destination=True):
+    """Disconnect all inputs and/or outputs of given node."""
+    selection = OpenMaya.MSelectionList()
+    selection.add(node)
+    node_ = OpenMaya.MFnDependencyNode(selection.getDependNode(0))
+    modifier = OpenMaya.MDagModifier()
+    for plug in node_.getConnections():
+        if source and plug.isDestination:
+            modifier.disconnect(plug.source(), plug)
+        if destination and plug.isSource:
+            for each in plug.destinations():
+                modifier.disconnect(plug, each)
+    modifier.doIt()
 
 
 def quick_connections():
@@ -55,6 +70,8 @@ def quick_connections():
 
 def pairblend_three_nodes():
     """Create pairblend between three nodes."""
+    import pymel.core as pm
+
     # make sure selection order is active
     pref = pm.selectPref(query=True, trackSelectionOrder=True)
     if not pref:
@@ -88,6 +105,6 @@ def pairblend_three_nodes():
         selection[-1].addAttr(
             "weight", at="double", min=0, max=1, keyable=True
         )
-    selection[-1].weight >> pb.weight
+    selection[-1].weight >> pblend.weight
 
     pm.select(selection)

@@ -7,9 +7,9 @@ from __future__ import absolute_import
 
 import logging
 
-import bgdev.utils.decorator
 from maya import cmds
-import pymel.core as pm
+
+import bgdev.utils.decorator
 
 LOG = logging.getLogger(__name__)
 
@@ -70,6 +70,8 @@ def aim_to_children(up_vector=(0, 1, 0), aim_vector=(1, 0, 0)):
         aim_vector:
 
     """
+    import pymel.core as pm
+
     # make sure selection order is active
     pref = pm.selectPref(query=True, trackSelectionOrder=True)
     if not pref:
@@ -98,11 +100,7 @@ def aim_to_children(up_vector=(0, 1, 0), aim_vector=(1, 0, 0)):
     pt_b = selection[-1].getTranslation(space="world")
     dist = [0, (pt_a - pt_b).length(), 0]
     pm.move(
-        pt_up,
-        dist,
-        relative=True,
-        objectSpace=True,
-        worldSpaceDistance=True,
+        pt_up, dist, relative=True, objectSpace=True, worldSpaceDistance=True,
     )
 
     # aim each others according to the pt_up Vector
@@ -119,10 +117,7 @@ def aim_to_children(up_vector=(0, 1, 0), aim_vector=(1, 0, 0)):
             pm.delete(aim)
         else:
             rotation = pm.xform(
-                selection[i - 1],
-                query=True,
-                rotation=True,
-                worldSpace=True,
+                selection[i - 1], query=True, rotation=True, worldSpace=True,
             )
             pm.xform(each, rotation=rotation, worldSpace=True)
 

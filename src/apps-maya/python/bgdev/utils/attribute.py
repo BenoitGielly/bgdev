@@ -1,10 +1,7 @@
+"""Attribute utilities.
+
+:author: Benoit Gielly (benoit.gielly@gmail.com)
 """
-
-:created: 13 Feb 2018
-:author: Benoit Gielly <benoit.gielly@gmail.com>
-
-"""
-
 from ast import literal_eval
 
 from maya import cmds
