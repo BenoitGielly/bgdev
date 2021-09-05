@@ -11,6 +11,14 @@ from maya import cmds
 LOG = logging.getLogger(__name__)
 
 
+def maya_window():
+    """Return the MayaWindow if in Maya else None."""
+    for each in QtWidgets.QApplication.topLevelWidgets():
+        if each.objectName() == "MayaWindow":
+            return each
+    return None
+
+
 class LineEdit(QtWidgets.QLineEdit):
     """Customize QLineEdit with an enterPressed signal."""
 
@@ -31,9 +39,10 @@ class LineEdit(QtWidgets.QLineEdit):
 class Uniloop(QtWidgets.QDialog):
     """Quick GUI to loop simple commands on selected nodes."""
 
-    def __init__(self, parent=None):
+    def __init__(self, *args, **kwargs):
         """Class init."""
-        super(Uniloop, self).__init__(parent)
+        kwargs.setdefault("parent", maya_window())
+        super(Uniloop, self).__init__(*args, **kwargs)
         self.setup_ui()
 
     def setup_ui(self):
