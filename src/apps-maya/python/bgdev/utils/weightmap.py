@@ -9,9 +9,10 @@ import json
 import logging
 import os
 
+from maya import cmds
+
 import bgdev.utils.decorator
 import bgdev.utils.skincluster
-from maya import cmds
 
 LOG = logging.getLogger(__name__)
 DEFAULT_PATH = os.path.join(os.environ.get("MAYA_APP_DIR", ""), "weights")
@@ -63,7 +64,7 @@ def export_multiple_skinweights(nodes, path=DEFAULT_PATH):
     """
     data = {}
     for each in sorted(nodes):
-        weights = bgdev.utils.weightmap.export_skinweights(each)
+        weights = export_skinweights(each)
         if weights:
             data[each] = weights
 
