@@ -1,3 +1,22 @@
+# REMOVE:
+#     - [key: ctrl+c, context: ""]
+#     - [key: ctrl+v, context: ""]
+#     - [key: ctrl+x, context: ""]
+#     - [key: "5", context: "nodeEditorPanel"]
+
+bg_node_editor_showall:
+    edit: true
+    category: Node Editor
+    annotation: Show all attributes
+    language: python
+    keys: "5"
+    command: |
+        from maya import cmds, mel
+
+        node_editor = mel.eval("$_ = `getCurrentNodeEditor`")
+        for each in cmds.ls(selection=True):
+            cmds.nodeEditor(node_editor, edit=True, showAllNodeAttributes=each)
+
 bg_node_editor_add:
     edit: true
     category: Node Editor
