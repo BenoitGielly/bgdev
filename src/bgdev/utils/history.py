@@ -59,3 +59,19 @@ def freeze_transforms(nodes=None, transforms="trsp", history=False):
 def delete_unused():
     """Delete unused nodes in the scene."""
     mel.eval("MLdeleteUnused;")
+
+
+def set_history_visibility(value):
+    """Toggle the isHistoricallyInteresting attribute on nodes in the scene.
+
+    Args:
+        value (bool): True or False to show/hide the history.
+    """
+    value = 2 if value else 0
+    exclude = ["groupParts", "groupId", "objectSet", "unitConversion"]
+    exclude_nodes = cmds.ls("*", excludeType=exclude)
+    all_nodes = cmds.ls("*", intermediateObjects=False, noIntermediate=True)
+    nodes = list(set(all_nodes) - set(exclude_nodes))
+    for node in nodes:
+        if cmds.objExists(node + ".isHistoricallyInteresting"):
+            cmds.setAttr(node + ".isHistoricallyInteresting", value)

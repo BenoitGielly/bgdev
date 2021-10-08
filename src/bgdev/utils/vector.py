@@ -263,12 +263,7 @@ def get_distance_between(
 
     """
     if distance_between:
-        dist = cmds.createNode("distanceBetween")
-        cmds.connectAttr(node1 + ".worldMatrix[0]", dist + ".inMatrix1")
-        cmds.connectAttr(node2 + ".worldMatrix[0]", dist + ".inMatrix2")
-        value = cmds.getAttr(dist + ".distance")
-        cmds.delete(dist)
-        return value
+        return use_distance_between(node1, node2)
 
     if bounding_box:
         node1 = cmds.xform(
@@ -294,12 +289,20 @@ def get_distance_between(
             node2, query=True, translation=True, worldSpace=True
         )
 
-    value = (
+    return (
         (node1[0] - node2[0]) ** 2
         + (node1[1] - node2[1]) ** 2
         + (node1[2] - node2[2]) ** 2
     ) ** 0.5
 
+
+def use_distance_between(node1, node2):
+    """Use a distance between node to get the distance between two nodes."""
+    dist = cmds.createNode("distanceBetween")
+    cmds.connectAttr(node1 + ".worldMatrix[0]", dist + ".inMatrix1")
+    cmds.connectAttr(node2 + ".worldMatrix[0]", dist + ".inMatrix2")
+    value = cmds.getAttr(dist + ".distance")
+    cmds.delete(dist)
     return value
 
 
