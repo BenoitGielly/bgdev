@@ -4,8 +4,8 @@
 :created: 09/11/2018
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
-from collections import OrderedDict
 from functools import partial
+from collections import OrderedDict
 import logging
 
 from PySide2 import QtCore, QtGui, QtWidgets
@@ -19,6 +19,7 @@ class Separator(QtWidgets.QLabel):  # pylint: disable=too-few-public-methods
     """Create a separator line."""
 
     def __init__(self, height=2):
+        """Class init."""
         super(Separator, self).__init__()
         self.setFrameShape(QtWidgets.QFrame.HLine)
         self.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -48,6 +49,7 @@ class Header(QtWidgets.QWidget):
         """
 
     def __init__(self, *args, **kwargs):
+        """Class init."""
         super(Header, self).__init__(*args, **kwargs)
 
         # set properties
@@ -119,6 +121,7 @@ class TabWidget(QtWidgets.QTabWidget):
     """
 
     def __init__(self, *args, **kwargs):
+        """Class init."""
         super(TabWidget, self).__init__(*args, **kwargs)
         self.tab_width, self.tab_height = (60, 20)
         self.refresh_stylesheet()
@@ -178,6 +181,7 @@ class ScrollArea(QtWidgets.QScrollArea):
     """
 
     def __init__(self, *args, **kwargs):
+        """Class init."""
         super(ScrollArea, self).__init__(*args, **kwargs)
 
         # set properties
@@ -259,6 +263,7 @@ class GroupBox(QtWidgets.QGroupBox):
     """
 
     def __init__(self, title, visible=True, color=None, height=None):
+        """Class init."""
         super(GroupBox, self).__init__()
         self.default_visibility = visible
         self.header_height = height or 20
@@ -362,10 +367,12 @@ class PushButton(QtWidgets.QPushButton):
     alt_clicked = QtCore.Signal()
 
     def __init__(self, name="", parent=None, settings=None):
+        """Class init."""
         super(PushButton, self).__init__(parent)
 
         # properties
         self._settings = settings or {}
+        self._source_code = OrderedDict()
         self.setStyleSheet(self.CSS)
         self.setMinimumHeight(26)  # with icons, size is raised to 26
 
@@ -380,9 +387,17 @@ class PushButton(QtWidgets.QPushButton):
 
         command = self._settings.get("source", "")
         self.clicked.connect(partial(self.set_command, command))
+        self._source_code["clicked"] = command
 
         alt_command = self._settings.get("alt_source", "")
         self.alt_clicked.connect(partial(self.set_command, alt_command))
+        self._source_code["alt_clicked"] = alt_command
+
+        # add custom menus to the _source_code variable
+        menus = self._settings.get("menu") or {}
+        for label, menu_data in menus.items():
+            label = menu_data.get("label") or label
+            self._source_code[label] = menu_data.get("source", "")
 
     def mousePressEvent(self, event):
         """Run menu when right-click button is pressed instead of clicked."""
@@ -403,12 +418,13 @@ class PushButton(QtWidgets.QPushButton):
     def context_menu(self, pos=None):
         """Create a right click menu."""
         pos = pos if pos else QtGui.QCursor.pos()
-        menus = self._settings.get("menu", OrderedDict())
-        if not menus:
-            return
 
-        # setup the menu from data
+        # create the default menu
         menu = QtWidgets.QMenu(self)
+        menu.addAction("--- View code", self.view_code)
+
+        # add custom menus
+        menus = self._settings.get("menu") or {}
         for name, menu_data in menus.items():
             label = menu_data.get("label", name)
             source = menu_data.get("source", "")
@@ -417,6 +433,14 @@ class PushButton(QtWidgets.QPushButton):
         # run the menu
         menu.exec_(pos)
         self.update()
+
+    def view_code(self):
+        """Print the source code."""
+        msg = ""
+        for label, command in self._source_code.items():
+            if command:
+                msg += "\n{:->10} {} \n{}".format("", label, command)
+        print(msg)  # noqa:T001
 
     def set_command(self, source):
         """Set the command for each buttons."""
@@ -460,6 +484,7 @@ class IconButton(PushButton):
     CSS = PushButton.CSS + _CSS
 
     def __init__(self, *args, **kwargs):
+        """Class init."""
         super(IconButton, self).__init__(*args, **kwargs)
 
         size = QtCore.QSize(41, 41)
@@ -503,6 +528,7 @@ class LabelWidget(QtWidgets.QWidget):
     """
 
     def __init__(self, text):
+        """Class init."""
         super(LabelWidget, self).__init__()
         self.text = text
         self.setup_ui()

@@ -136,7 +136,7 @@ Commons:
               image: ../deleteUnused.png
               source: |
                   from maya import mel
-                  mel.eval('hyperShadePanelMenuCommand("hyperShadePanel1", "deleteUnusedNodes")')
+                  mel.eval('MLdeleteUnused;')
                   mel.eval('print "Unused Nodes have been successfully deleted"')
         - Update Intermediate:
               image: ../updateIntermediate.png

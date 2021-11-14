@@ -94,7 +94,11 @@ def to_qwidget(ctrl):
     for method in ["findControl", "findLayout", "findMenuItem"]:
         ptr = getattr(OpenMayaUI.MQtUtil, method)(ctrl)
         if ptr:
-            return shiboken2.wrapInstance(long(ptr), QtWidgets.QWidget)
+            try:
+                ptr = long(ptr)
+            except NameError:
+                ptr = int(ptr)
+            return shiboken2.wrapInstance(ptr, QtWidgets.QWidget)
     return None
 
 

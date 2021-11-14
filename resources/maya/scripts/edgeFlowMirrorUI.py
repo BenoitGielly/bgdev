@@ -52,7 +52,13 @@ def show():
 
 def get_maya_window():
     ptr = OpenMayaUI.MQtUtil.mainWindow()
-    return shiboken2.wrapInstance(int(ptr), QtWidgets.QWidget)
+    if ptr:
+        try:
+            ptr = long(ptr)
+        except NameError:
+            ptr = int(ptr)
+        return shiboken2.wrapInstance(ptr, QtWidgets.QWidget)
+    return None
 
 
 class EdgeFlowMirrorUI(QtWidgets.QDialog):
