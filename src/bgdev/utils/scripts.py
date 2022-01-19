@@ -81,7 +81,15 @@ def toggle_side_select(toggle=True):  # pylint: disable=too-many-statements
                 new_list.append(each)
                 continue
 
-            if short_name.startswith("L_"):
+            if short_name.startswith("l_"):
+                pfx = ["l_", "r_"]
+            elif short_name.startswith("r_"):
+                pfx = ["r_", "l_"]
+            elif short_name.startswith("l"):
+                pfx = ["l", "r"]
+            elif short_name.startswith("r"):
+                pfx = ["r", "l"]
+            elif short_name.startswith("L_"):
                 pfx = ["L_", "R_"]
             elif short_name.startswith("R_"):
                 pfx = ["R_", "L_"]
