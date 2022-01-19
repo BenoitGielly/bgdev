@@ -23,6 +23,7 @@ def frames_per_second(
     viewports=("viewport2"),
     meshes_only=True,
     outfile=None,
+    force_gpu=True
 ):
     """Evaluate the framePerSecond in the current scene.
 
@@ -36,6 +37,7 @@ def frames_per_second(
         outfile (bool or str): Save the output fps in the given txt file.
             If `True` is passed, query the current scene path and save the log
             next to it (Useful when benchmarking multiple scenes in a loop).
+        force_gpu (bool): Force enabling the GPU override.
 
     Returns:
         float: The evaluated frame per seconds as a float number.
@@ -79,7 +81,8 @@ def frames_per_second(
     cmds.currentTime(start)
 
     # enable GPU acceleration
-    mel.eval("turnOnOpenCLEvaluatorActive();")
+    if force_gpu:
+        mel.eval("turnOnOpenCLEvaluatorActive();")
 
     # disable color management
     color_management = cmds.colorManagementPrefs(query=True, cmEnabled=True)
