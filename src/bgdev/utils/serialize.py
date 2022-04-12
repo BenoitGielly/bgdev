@@ -5,6 +5,7 @@
 """
 from __future__ import absolute_import
 
+import codecs
 from collections import OrderedDict
 import json
 import logging
@@ -16,7 +17,18 @@ import yaml.representer
 LOG = logging.getLogger(__name__)
 
 
-# JSON utils ---
+def compress_data(data):
+    """Compress dictionary using zlib and base64."""
+    result = bytes(str(json.dumps(data)).encode("utf-8"))
+    return codecs.encode(codecs.encode(result, "zlib"), "base64")
+
+
+def uncompress_data(str_data):
+    """Read compressed dictionary."""
+    result = codecs.decode(codecs.decode(str_data, "base64"), "zlib")
+    return json.loads(result)
+
+
 def json_load(path, **kwargs):
     """Import JSON file.
 
@@ -54,7 +66,6 @@ def json_dump(data, path, **kwargs):
     return path
 
 
-# YAML utils ---
 def yaml_load(path, ordered=False, **kwargs):
     """Import YAML file.
 
@@ -75,7 +86,7 @@ def yaml_load(path, ordered=False, **kwargs):
         LOG.warning("Path doesn't exists, returning empty dictionary.")
     else:
         with open(path) as _file:
-            data = yaml.load(_file, **kwargs)
+            data = yaml.safe_load(_file, **kwargs)
 
     return data
 

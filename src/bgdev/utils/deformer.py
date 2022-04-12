@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import logging
 
 import bgdev.utils.decorator
+
 from maya import cmds
 from maya.api import OpenMaya
 
@@ -87,7 +88,6 @@ def transfer_base_weights(source, target, joint=0):
 
     """
     weight_plugs = {
-        "wire": "{}.weightList[0].weights[{}]",
         "nonLinear": "{}.weightList[0].weights[{}]",
         "skinCluster": "{}.weightList[{}].weights[{}]",
         "blendShape": "{}.inputTarget[0].baseWeights[{}]",
@@ -98,17 +98,19 @@ def transfer_base_weights(source, target, joint=0):
     for i, _ in enumerate(vertices):
 
         # get weights from source
-        node_type = cmds.nodeType(source)
-        if node_type == "skinCluster":
-            attr = weight_plugs[node_type].format(source, i, joint)
+        nodetype = cmds.nodeType(source)
+        nodetype = "nonLinear" if nodetype not in weight_plugs else nodetype
+        if nodetype == "skinCluster":
+            attr = weight_plugs[nodetype].format(source, i, joint)
         else:
-            attr = weight_plugs[node_type].format(source, i)
+            attr = weight_plugs[nodetype].format(source, i)
         value = cmds.getAttr(attr)
 
         # set weights on target
-        node_type = cmds.nodeType(target)
-        if node_type == "skinCluster":
-            attr = weight_plugs[node_type].format(target, i, joint)
+        nodetype = cmds.nodeType(target)
+        nodetype = "nonLinear" if nodetype not in weight_plugs else nodetype
+        if nodetype == "skinCluster":
+            attr = weight_plugs[nodetype].format(target, i, joint)
         else:
-            attr = weight_plugs[node_type].format(target, i)
+            attr = weight_plugs[nodetype].format(target, i)
         cmds.setAttr(attr, value)
