@@ -5,8 +5,8 @@
 """
 import logging
 
-from maya import cmds
 import yaml
+from maya import cmds
 
 LOG = logging.getLogger(__name__)
 
@@ -30,12 +30,12 @@ def create_hotkeys_from_yaml(path=None):
 
     hotkey_file = path or __file__.rsplit(".")[0] + ".yaml"
     with open(hotkey_file, "r") as stream:
-        data = yaml.load(stream)
+        data = yaml.safe_load(stream)
 
     for name, flags in data.items():
         command = flags.pop("command", None)
         keys = flags.pop("keys", None)
-        if command and keys:
+        if (command and keys) or flags.get("remove"):
             create_hotkey(name, command, keys, **flags)
 
 
@@ -44,6 +44,7 @@ def create_hotkey(  # pylint: disable=too-many-arguments
     command,
     keys,
     edit=False,
+    remove=False,
     annotation="New user script",
     category="custom",
     language="python",
@@ -71,6 +72,10 @@ def create_hotkey(  # pylint: disable=too-many-arguments
             mods_flags[each.lower() + "Modifier"] = True
 
     cmd_exists = cmds.runTimeCommand(name, query=True, exists=True)
+    if cmd_exists and remove:
+        cmds.hotkey(keyShortcut=key, name="", **mods_flags)
+        return
+
     if cmd_exists and not edit:
         msg = (
             "{0!r} command already exists, "

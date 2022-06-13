@@ -29,6 +29,8 @@ def find_conflicts(query=False):
 
     for each in cmds.ls(transforms=True, shapes=True):
         if "|" in each:
+            if cmds.getAttr(each + ".intermediateObject"):
+                cmds.setAttr(each + ".intermediateObject", False)
             if cmds.objectType(each, isAType="shape"):
                 conflict_shapes.append(each)
             else:
@@ -45,9 +47,11 @@ def find_conflicts(query=False):
 
     # create set if conflicts
     if conflict_nodes:
+        LOG.info("Found conflicts with: %s", conflict_nodes)
         cmds.sets(conflict_nodes, name="NODES_NAME_CONFLICTS")
 
     if conflict_shapes:
+        LOG.info("Found conflicts with: %s", conflict_shapes)
         cmds.sets(conflict_shapes, name="SHAPES_NAME_CONFLICTS")
 
     if not conflict_nodes and not conflict_shapes:

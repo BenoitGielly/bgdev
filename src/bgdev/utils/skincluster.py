@@ -140,7 +140,8 @@ def remove_influences(node, joints=None, unused=False, disconnect=False):
     # add each targets to the skincluster
     skc = get_skincluster(node)
     if not skc:
-        raise RuntimeError("Couldn't find a skincluster.")
+        LOG.warning("Couldn't find a skincluster onto %s.", node)
+        return
 
     influences = get_influences(skc)
     if unused:
@@ -149,7 +150,7 @@ def remove_influences(node, joints=None, unused=False, disconnect=False):
         LOG.info("Found %s influences to remove in %s", len(joints), skc)
 
     for each in joints:
-        if not each in influences:
+        if each not in influences:
             continue
         if disconnect:
             index = influences.index(each)
@@ -267,7 +268,7 @@ def copy_skincluster(source, target, method="closestPoint"):
     }
 
     # get skinclusters and influences
-    source_skc = bgdev.utils.skincluster.get_skincluster(source)
+    source_skc = get_skincluster(source)
     if not source_skc:
         raise RuntimeError("Couldn't find a source skincluster.")
 
@@ -277,7 +278,7 @@ def copy_skincluster(source, target, method="closestPoint"):
 
     # add influences if skincluster already exists
     target_infs = None
-    target_skc = bgdev.utils.skincluster.get_skincluster(target)
+    target_skc = get_skincluster(target)
     if target_skc:
         target_infs = cmds.skinCluster(target_skc, query=True, influence=True)
         diff_influences = set(source_infs + infs_objects) - set(target_infs)
@@ -288,7 +289,7 @@ def copy_skincluster(source, target, method="closestPoint"):
 
     # create skincluster otherwise
     else:
-        name = "{0}_skinCluster".format(target).rsplit("|")[-1]
+        name = "{}_skinCluster".format(target).rsplit("|")[-1]
         name = name + "#" if cmds.objExists(name) else name
         skc_settings = dict(bgdev.utils.skincluster.SKINCLUSTER_SETTINGS)
         skc_settings["skinMethod"] = cmds.skinCluster(

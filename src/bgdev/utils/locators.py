@@ -7,10 +7,10 @@ from __future__ import absolute_import
 
 import logging
 
+from maya import cmds
+
 import bgdev.utils.decorator
 import bgdev.utils.vector
-from maya import cmds
-import pymel.core as pm
 
 LOG = logging.getLogger(__name__)
 
@@ -168,6 +168,8 @@ def locator_on_selection(method="matrix"):
 
 def attach_locators_to_curve():
     """Attach a locator on each curve CVs."""
+    import pymel.core as pm
+
     selection = pm.ls(selection=True)
     curve = [x for x in selection if x.getShape().type() == "nurbsCurve"][0]
     locator = [x for x in selection if x.getShape().type() != "nurbsCurve"]

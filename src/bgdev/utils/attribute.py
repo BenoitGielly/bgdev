@@ -127,3 +127,27 @@ def attributes_unlock(node, base=True, user=True, attr_list=None):
     # convert data to string and store it on the node
     attr_str = str(attr_data)
     cmds.setAttr(base_attr, attr_str, type="string")
+
+
+def reorder_attributes(node, attributes):
+    """Reorder attributes at the end.
+
+    Args:
+        node (str): Node that contains the attributes.
+        attributes (list): Attributes to reorder as a list.
+    """
+    locked = []
+    for each in attributes:
+        plug = "{}.{}".format(node, each)
+        if cmds.getAttr(plug, lock=True):
+            cmds.setAttr(plug, lock=False)
+            locked.append(each)
+        try:
+            cmds.deleteAttr(node, attribute=each)
+            cmds.undo()
+        except RuntimeError:
+            pass
+
+    # restore locked attributes
+    for each in locked:
+        cmds.setAttr("{}.{}".format(node, each), lock=True)

@@ -7,28 +7,18 @@ from __future__ import absolute_import
 
 import logging
 
+import bgdev.utils.decorator
 from maya import cmds
 from maya.api import OpenMaya
-
-import bgdev.utils.decorator
 
 LOG = logging.getLogger(__name__)
 
 
-def mesh_combine_and_keep(nodes=None, visible=True):
+def mesh_combine_and_keep(nodes, name, visible=True):
     """Combine meshes and keep the original."""
-    nodes = nodes or cmds.ls(selection=True)
-    name = nodes[0].rsplit("_", 1)[0]
-
-    # mesh combine
     combined, unite = cmds.polyUnite(nodes, constructionHistory=True)
     combined = cmds.rename(combined, name + "_combined")
     unite = cmds.rename(unite, name + "_polyUnite")
-
-    # parent combined mesh
-    parent = cmds.listRelatives(nodes[0], parent=True)
-    cmds.parent(combined, parent)
-    cmds.reorder(combined, front=True)
 
     # turn shapes back on and parent them under their original transform
     for each in nodes:
@@ -107,5 +97,5 @@ def find_phantom_vertices(fix=False):
 
         face_id = cmds.polyEvaluate(each, face=True) - 1
         cmds.delete(
-            "{0}.f[{1}]".format(each, face_id), constructionHistory=False,
+            "{}.f[{}]".format(each, face_id), constructionHistory=False
         )

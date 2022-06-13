@@ -1,8 +1,17 @@
 # REMOVE:
-#     - [key: ctrl+c, context: ""]
-#     - [key: ctrl+v, context: ""]
-#     - [key: ctrl+x, context: ""]
 #     - [key: "5", context: "nodeEditorPanel"]
+
+CutSelected:
+    remove: true
+    keys: ctrl+x
+
+CopySelected:
+    remove: true
+    keys: ctrl+c
+
+PasteSelected:
+    remove: true
+    keys: ctrl+v
 
 bg_node_editor_showall:
     edit: true

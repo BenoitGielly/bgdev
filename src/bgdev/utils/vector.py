@@ -10,7 +10,6 @@ from math import sin, sqrt
 
 from maya import cmds, mel
 from maya.api.OpenMaya import MMatrix, MVector
-import pymel.core as pm
 
 
 def get_matrix_from_transforms(position, normal, tangent):
@@ -309,6 +308,7 @@ def use_distance_between(node1, node2):
 def aim_in_plane(positions, aim_vector=(1, 0, 0), up_vector=(0, 1, 0)):
     """Align selected locators based on plane made of the first and last."""
     # pylint: disable=too-many-locals
+    import pymel.core as pm
 
     # create nulls and snap them to given positions
     nulls = []
