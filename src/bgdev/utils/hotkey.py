@@ -37,6 +37,7 @@ def create_hotkeys_from_yaml(path=None):
         keys = flags.pop("keys", None)
         if (command and keys) or flags.get("remove"):
             create_hotkey(name, command, keys, **flags)
+    cmds.savePrefs(hotkeys=True)
 
 
 def create_hotkey(  # pylint: disable=too-many-arguments
