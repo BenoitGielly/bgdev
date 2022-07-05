@@ -7,11 +7,26 @@ from __future__ import absolute_import
 
 import logging
 
-import bgdev.utils.decorator
 from maya import cmds
 from maya.api import OpenMaya
 
+import bgdev.api.core
+import bgdev.utils.decorator
+
 LOG = logging.getLogger(__name__)
+
+
+def extract_from_shape_orig(mesh):
+    """Create new mesh from shape orig."""
+    result = cmds.deformableShape(mesh, originalGeometry=True)[0]
+    result = result.split(".")[0] or mesh
+    transform = cmds.createNode("transform", name="tempMesh")
+    cmds.createNode("mesh", parent=transform, name=transform + "Shape")
+    transform = cmds.rename(transform, mesh + "_orig")
+    src_mesh = bgdev.api.core.as_mesh(result)
+    tgt_mesh = bgdev.api.core.as_obj(transform)
+    src_mesh.copy(src_mesh.object(), tgt_mesh)
+    return transform
 
 
 def mesh_combine_and_keep(nodes, name, visible=True):

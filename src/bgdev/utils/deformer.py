@@ -7,12 +7,46 @@ from __future__ import absolute_import
 
 import logging
 
-import bgdev.utils.decorator
-
+import maya.internal.common.utils.geometry
 from maya import cmds
 from maya.api import OpenMaya
 
+import bgdev.utils.decorator
+
 LOG = logging.getLogger(__name__)
+
+
+def create_proximity_wrap(driver, targets, falloff=1.0):
+    """Create a proximity wrap using a single driver and multiple targets.
+
+    Args:
+        driver (str): Name of driver mesh.
+        targets (list): List of driven meshes.
+        falloff (float): Default value for the folloffScale attribute.
+
+    Returns:
+        str: Name of the proximityWrap deformer.
+    """
+    if not driver or not cmds.objExists(driver):
+        LOG.warning("Driver not found or doesn't exist!")
+        return
+
+    targets = targets or []
+    targets = [x for x in targets if cmds.objExists(x)]
+    if not targets:
+        LOG.warning("Targets not found or don't exist!")
+        return
+
+    deformer = cmds.deformer(targets, type="proximityWrap")[0]
+    orig_plug = (
+        maya.internal.common.utils.geometry.getOrCreateOriginalGeometry(driver)
+    )
+    cmds.connectAttr(orig_plug, deformer + ".drivers[0].driverBindGeometry")
+    cmds.connectAttr(
+        driver + ".worldMesh", deformer + ".drivers[0].driverGeometry"
+    )
+    cmds.setAttr(deformer + ".falloffScale", falloff)
+    return deformer
 
 
 @bgdev.utils.decorator.UNDO_REPEAT

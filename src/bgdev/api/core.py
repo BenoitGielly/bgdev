@@ -5,14 +5,13 @@ Note:
 
 :author: Benoit Gielly (benoit.gielly@gmail.com)
 """
-from maya.api import OpenMaya
+from maya.api import OpenMaya, OpenMayaAnim
 
 
 def obj_exists(obj):
     """Check if objExists using OpenMaya."""
     try:
-        as_selection(obj)
-        return True
+        return as_selection(obj)
     except RuntimeError:
         return False
 
@@ -55,3 +54,8 @@ def as_node(name):
 def as_mesh(name):
     """Get name as MFnMesh."""
     return OpenMaya.MFnMesh(as_dag(name))
+
+
+def as_filter(deformer):
+    """Get deformer as GeometryFilter."""
+    return OpenMayaAnim.MFnGeometryFilter(as_obj(deformer))

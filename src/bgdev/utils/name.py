@@ -8,8 +8,9 @@ from __future__ import absolute_import
 import logging
 import re
 
-import bgdev.utils.decorator
 from maya import cmds
+
+import bgdev.utils.decorator
 
 LOG = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ def generate_unique_name(name):
     """Generate a unique name based on the given one."""
     count = 1
     while cmds.objExists(name):
-        name = "{0}{1}".format(remove_end_digits(name, False), count)
+        name = "{}{}".format(remove_end_digits(name, False), count)
         count += 1
 
     return name
