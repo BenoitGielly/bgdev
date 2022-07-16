@@ -4,9 +4,9 @@
 :created: 09/11/2018
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
-from functools import partial
-from collections import OrderedDict
 import logging
+from collections import OrderedDict
+from functools import partial
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
@@ -551,3 +551,78 @@ class LabelWidget(QtWidgets.QWidget):
         layout.addWidget(self.upper_separator)
         layout.addWidget(self.label)
         layout.addWidget(self.lower_separator)
+
+
+class FlowLayout(QtWidgets.QLayout):
+    """Custom resizable widget."""
+
+    def __init__(self, parent=None):
+        super(FlowLayout, self).__init__(parent)
+        self.__items = []
+
+    def itemAt(self, index):
+        """Return the item at the given index."""
+        try:
+            return self.__items[index]
+        except IndexError:
+            return None
+
+    def takeAt(self, index):
+        """Remove and return the item at the given index."""
+        try:
+            return self.__items.pop(index)
+        except IndexError:
+            return None
+
+    def count(self):
+        """Return the number of item in the layout."""
+        return len(self.__items)
+
+    def addItem(self, item):
+        """Add an item to the layout."""
+        self.__items.append(item)
+
+    def minimumSize(self):
+        """Find the minimum size of the layout."""
+        size = QtCore.QSize(0, 0)
+        for item in self.__items:
+            size = size.expandedTo(item.minimumSize())
+        size += QtCore.QSize(
+            self.contentsMargins().left() + self.contentsMargins().right(),
+            self.contentsMargins().top() + self.contentsMargins().bottom(),
+        )
+        return size
+
+    def sizeHint(self):
+        """The prefered size of the layout."""
+        return self.minimumSize()
+
+    def hasHeightForWidth(self):
+        """Tell Qt that the height of the layout is depending of its width."""
+        return True
+
+    def heightForWidth(self, width):
+        """Calculare the hieght needed base on the layout width."""
+        return self.__do_layout(QtCore.QRect(0, 0, width, 0), move=False)
+
+    def setGeometry(self, rect):
+        """Place all the item in the space allocated to the layout."""
+        self.__do_layout(rect, move=True)
+
+    def __do_layout(self, rect, move=False):
+        current_x = self.contentsMargins().left()
+        current_y = self.contentsMargins().top()
+        next_x = current_x
+        next_y = current_y
+        for item in self.__items:
+            next_x = current_x + item.sizeHint().width() + self.spacing()
+            if next_x + self.contentsMargins().right() >= rect.width():
+                current_x = self.contentsMargins().left()
+                current_y = next_y + self.spacing()
+                next_x = current_x + item.sizeHint().width() + self.spacing()
+            if move:
+                point = QtCore.QPoint(current_x, current_y)
+                item.setGeometry(QtCore.QRect(point, item.sizeHint()))
+            current_x = next_x
+            next_y = max(next_y, current_y + item.sizeHint().height())
+        return next_y + self.contentsMargins().bottom()

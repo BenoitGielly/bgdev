@@ -5,11 +5,11 @@
 """
 from __future__ import absolute_import
 
-from collections import OrderedDict
-from functools import partial
 import logging
 import os
 import traceback
+from collections import OrderedDict
+from functools import partial
 
 from PySide2 import QtGui, QtWidgets
 
@@ -337,10 +337,8 @@ class BaseToolbar(QtWidgets.QDialog):
         Returns:
             QWidget: A parent QWidget containing the widgets in layout.
         """
-        import bgdev.ui.flow_layout
-
         base = QtWidgets.QWidget(self)
-        flow = bgdev.ui.flow_layout.FlowLayout(base)
+        flow = ui.FlowLayout(base)
         flow.setContentsMargins(0, 0, 0, 0)
         flow.setSpacing(1)
         for data in content:
@@ -348,10 +346,6 @@ class BaseToolbar(QtWidgets.QDialog):
                 icon_btn = ui.IconButton(name, settings=settings)
                 icon_btn.repeatable = self.repeatable
                 flow.addWidget(icon_btn)
-
-        if utils.get_dcc() == "maya":
-            flow.set_style_offsets(10, 9)
-
         return base
 
     def create_box_widget(self, content):

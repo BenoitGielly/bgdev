@@ -9,9 +9,10 @@ from __future__ import absolute_import
 import logging
 import os
 
-from PySide2 import QtCore, QtWidgets
-from maya import OpenMayaUI, cmds
 import shiboken2
+from PySide2 import QtCore, QtWidgets
+
+from maya import OpenMayaUI, cmds
 
 from ... import cfg, main
 
@@ -26,20 +27,43 @@ def show(*args, **kwargs):
         kwargs["floating"] = floating if floating is not None else True
 
     # show the widget
-    window = Toolbar()
+    window = MayaToolbar()
     window.dock(*args, **kwargs)
-
     return window
 
 
-class Toolbar(main.BaseToolbar):
+def maya_window():
+    """Return the MayaWindow if in Maya else None."""
+    for each in QtWidgets.QApplication.topLevelWidgets():
+        if each.objectName() == "MayaWindow":
+            return each
+    return None
+
+
+def to_qwidget(ctrl):
+    """Convert a Maya widget to a PySide2 QWidget.
+
+    Args:
+        ctrl (str): Name of the maya widget as a string.
+
+    Returns:
+        QtWidgets.QWidget: QWidget instance object of the given widget.
+    """
+    for method in ["findControl", "findLayout", "findMenuItem"]:
+        ptr = getattr(OpenMayaUI.MQtUtil, method)(ctrl)
+        if ptr:
+            return shiboken2.wrapInstance(int(ptr), QtWidgets.QWidget)
+    return None
+
+
+class MayaToolbar(main.BaseToolbar):
     """Create a script launcher window."""
 
     DCC_TABS_FOLDER = os.path.dirname(__file__)
 
     def __init__(self, parent=None):
         parent = parent or maya_window()
-        super(Toolbar, self).__init__(parent=parent)
+        super(MayaToolbar, self).__init__(parent=parent)
         self.dock_title = "Launcher"
         self.dock_area = "left"
 
@@ -65,41 +89,12 @@ class Toolbar(main.BaseToolbar):
         Args:
             callback (function): Method executed by the button.
         """
-        mel_callback = "import {0};{0}.COMMAND_CALLBACK()".format(cfg.__name__)
-
+        # the callback can error even though mel.eval-ing it works...
         try:
-            # the callback can error even though mel.eval-ing it works...
-            cmds.repeatLast(addCommand='python("{0}")'.format(mel_callback))
-        except BaseException:
+            cmd = "import {0};{0}.COMMAND_CALLBACK()".format(cfg.__name__)
+            cmds.repeatLast(addCommand='python("{}")'.format(cmd))
+        except BaseException:  # pylint: disable=broad-except
             pass
-
-
-def maya_window():
-    """Return the MayaWindow if in Maya else None."""
-    for each in QtWidgets.QApplication.topLevelWidgets():
-        if each.objectName() == "MayaWindow":
-            return each
-    return None
-
-
-def to_qwidget(ctrl):
-    """Convert a Maya widget to a PySide2 QWidget.
-
-    Args:
-        ctrl (str): Name of the maya widget as a string.
-
-    Returns:
-        QtWidgets.QWidget: QWidget instance object of the given widget.
-    """
-    for method in ["findControl", "findLayout", "findMenuItem"]:
-        ptr = getattr(OpenMayaUI.MQtUtil, method)(ctrl)
-        if ptr:
-            try:
-                ptr = long(ptr)
-            except NameError:
-                ptr = int(ptr)
-            return shiboken2.wrapInstance(ptr, QtWidgets.QWidget)
-    return None
 
 
 def dock_widget(widget, title="DockWindow", area="right", floating=False):
@@ -146,22 +141,3 @@ def dock_widget(widget, title="DockWindow", area="right", floating=False):
     layout.addWidget(widget)
 
     return widget
-
-
-def get_workspaces(**kwargs):
-    """Get Maya workspaces (WIP)."""
-    docking_workspaces = [
-        "Maya Classic",
-        "Modeling - Standard",
-        "Modeling - Expert",
-        "UV Editing",
-        "Rigging",
-        "Animation",
-        "MASH",
-        "Motion Graphics",
-        "Bifrost Fluids",
-    ]
-
-    current = cmds.workspaceLayoutManager(query=True, current=True)
-    workspace = kwargs.pop("workspace", current)
-    return workspace, docking_workspaces
