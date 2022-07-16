@@ -3,6 +3,14 @@
 PYTHONPATH+:=../../src
 MAYA_SHELF_PATH+:=shelves
 
-+ MAYAVERSION:2019 bgdev_extra latest ../../python2
-+ MAYAVERSION:2020 bgdev_extra latest ../../python2
-+ MAYAVERSION:2022 bgdev_extra latest ../../python%MAYA_PYTHON_VERSION%
++ MAYAVERSION:2019 bgdev_python latest ../../python/2020
+PYTHONPATH+:=.
+
++ MAYAVERSION:2020 bgdev_python latest ../../python/2020
+PYTHONPATH+:=.
+
++ MAYAVERSION:2022 bgdev_python latest ../../python/2022-py%MAYA_PYTHON_VERSION%
+PYTHONPATH+:=.
+
++ MAYAVERSION:2023 bgdev_python latest ../../python/2023
+PYTHONPATH+:=.
