@@ -2,25 +2,34 @@
 
 :author: Benoit Gielly (benoit.gielly@gmail.com)
 """
+import logging
 from ast import literal_eval
 
 from maya import cmds
 
+LOG = logging.getLogger(__name__)
 
-def create_separator_attribute(node, name=None):
+
+def create_separator_attribute(node, name, unique=False):
     """Create a separator attribute on the given node.
 
     Args:
         node (str): Name of the node to add the separator attribute.
         name (str): Name nice (category)
+        unique (bool): Don't create a new one if it already exists.
 
     """
-    i, node_attr = 1, "{0}.separator1".format(node)
-    while cmds.objExists(node_attr):
-        i += 1
-        node_attr = "{0}.separator{1}".format(node, i)
+    plug = "{}.{}_separator".format(node, name)
+    if cmds.objExists(plug) and unique:
+        LOG.debug("Plug %s already exists!", plug)
+        return
 
-    node, attr = node_attr.split(".")
+    i = 1
+    while cmds.objExists(plug):
+        plug = "{}.{}_separator{}".format(node, name, i)
+        i += 1
+
+    node, attr = plug.split(".")
     cmds.addAttr(
         node,
         longName=attr,
@@ -28,14 +37,15 @@ def create_separator_attribute(node, name=None):
         attributeType="enum",
         enumName=":--------",
     )
-    cmds.setAttr(node_attr, channelBox=True)
+    cmds.setAttr(plug, channelBox=True)
 
 
 def attributes_toggle(nodes=None, attr_list=None):
     """Toggle attributes between default and unlocked states.
 
     Args:
-        nodes (list): List of nodes to toggle. If not given, use viewport selection.
+        nodes (list): List of nodes to toggle.
+            If not given, use viewport selection.
         attr_list (list): List of extra attributes to toggle
     """
 
@@ -78,7 +88,8 @@ def attributes_unlock(node, base=True, user=True, attr_list=None):
     Args:
         node (str): Node to unlock attributes
         attr_list (list): List of extra attributes to toggle
-        base (bool): If True, will toggle base attributes (translate, rotate, scale, visibility).
+        base (bool): If True, will toggle base attributes
+            (translate, rotate, scale, visibility).
         user (bool): If True, will toggle user's attributes.
     """
 

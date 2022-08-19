@@ -12,6 +12,7 @@ LOG = logging.getLogger(__name__)
 
 ICON_PATHS = []
 COMMAND_CALLBACK = None
-LABEL = "{} | {}".format(
-    os.environ.get("SHOW", "Toolbar"), os.environ.get("SHOT")
-)
+
+SHOW = os.environ.get("STIM_SHOW")
+SHOT = os.environ.get("STIM_SHOT")
+LABEL = "{}".format(SHOW or "Toolbar")
