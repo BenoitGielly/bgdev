@@ -31,7 +31,8 @@ def check_libraries():
     """
     try:
 
-        cmds.loadPlugin("ngSkinTools", quiet=True)
+        if not cmds.pluginInfo("ngSkinTools", query=True, loaded=True):
+            cmds.loadPlugin("ngSkinTools", quiet=True)
 
         import ngSkinTools.importExport
         import ngSkinTools.mllInterface

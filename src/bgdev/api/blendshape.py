@@ -8,6 +8,24 @@ from maya.api import OpenMaya
 from . import attribute, core, deformer
 
 
+def fix_target_names(blendshape):
+    """Fix target names of given blendshapes based on the input targets."""
+    src_plug = (
+        "{}.inputTarget[0].inputTargetGroup[{}]"
+        ".inputTargetItem[6000].inputGeomTarget"
+    )
+    targets = attribute.get_node_aliases(blendshape, indices=True)
+    for alias, index in targets.items():
+        input_ = cmds.listConnections(
+            src_plug.format(blendshape, index),
+            source=True,
+            destination=False,
+        )
+        if input_ and alias != input_[0]:
+            plug = "{}.weight[{}]".format(blendshape, index)
+            attribute.set_alias(plug, input_[0])
+
+
 def copy_target_weights(source, destination):
     """Copy a blendshape's target weights to another target.
 

@@ -34,7 +34,7 @@ def get_class_name(cls):
     return "{}.{}".format(cls.__module__, cls.__name__)
 
 
-class BaseToolbar(QtWidgets.QDialog):
+class BaseToolbar(QtWidgets.QWidget):
     """Create a script launcher window.
 
     Args:

@@ -6,14 +6,61 @@ Mostly, controler shapes creation (needs to be turned into data)
 """
 from __future__ import print_function
 
+import json
 import logging
 import os
 
-import bgdev.utils.color
-from maya import cmds
 import yaml
 
+from maya import cmds
+from maya.api import OpenMaya
+
+import bgdev.utils.color
+
 LOG = logging.getLogger(__name__)
+
+
+def extract_shape_data(node, as_json=False):
+    """Extract Maya's shape.cached attribute value.
+
+    Note:
+        Unfortunately, the only way that I found to extract the ".cached"
+        attribute was to use Maya Python's API.
+
+    Args:
+        node (str): The name of the shape node to extract.
+        as_json (bool): Returns the data in a json compatible format.
+
+    Returns:
+        list: The arguments needed by the cmds.setAttr() command.
+
+    """
+
+    selection = OpenMaya.MSelectionList()
+    selection.add(node)
+    dpcn = OpenMaya.MFnDependencyNode(selection.getDependNode(0))
+    if dpcn.typeName == "transform":
+        dag = selection.getDagPath(0)
+        dpcn = OpenMaya.MFnDependencyNode(dag.child(0))
+    plug = dpcn.findPlug("cached", 0)
+    value = [x.strip().split() for x in plug.getSetAttrCmds()[1:-1]]
+
+    # base arguments
+    args = [int(x) for x in value[0][:3] + [value[0][-1]]]
+    args.insert(-1, False if value[0][3] == "no" else True)
+
+    # add knots
+    args.append([int(x) for x in value[1][1:]])
+    args.append(int(value[1][0]))
+
+    # add CVs
+    args.append(int(value[2][0]))
+    args.extend([[float(y) for y in x] for x in value[3:]])
+
+    if as_json:
+        return json.dumps(args)
+
+    return args
 
 
 def select_all():

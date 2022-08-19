@@ -16,6 +16,33 @@ import bgdev.utils.decorator
 LOG = logging.getLogger(__name__)
 
 
+def rename_blendshape_targets():
+    """Rename blendshape targets to the currently connected mesh input."""
+
+    def get_plug_index(plug):
+        """Get the plug's array's index."""
+        for each in plug.split("."):
+            if each.startswith("inputTargetGroup"):
+                return int(each.rsplit("[")[-1].rsplit("]")[0])
+        return None
+
+    for each in cmds.ls(type="blendShape"):
+        targets = cmds.listConnections(
+            each + ".inputTarget", connections=True, plugs=True
+        )
+        if not targets:
+            continue
+        for src_plug, tgt_plug in zip(targets[1::2], targets[0::2]):
+            index = get_plug_index(tgt_plug)
+            shape = src_plug.split(".", 1)[0]
+            parent = cmds.listRelatives(shape, parent=True)[0]
+            plug = "{}.weight[{}]".format(each, index)
+            alias = cmds.aliasAttr(plug, query=True)
+            if alias != parent:
+                cmds.aliasAttr(parent, plug)
+                cmds.warning("Updated alias to %s for %s" % (parent, plug))
+
+
 def create_proximity_wrap(driver, targets, falloff=1.0):
     """Create a proximity wrap using a single driver and multiple targets.
 
@@ -76,6 +103,24 @@ def update_lattice(node, lattice, add=True):
         ffd = cmds.listConnections(shape[0], type="ffd")
         if ffd:
             cmds.lattice(ffd[0], edit=True, geometry=node, remove=not add)
+
+
+def cleanup_lattices_ffds():
+    """Rename lattices' FFD deformers based on the lattice name."""
+    for each in cmds.ls(type="ffd"):
+        ltc_base = (
+            cmds.listConnections(each + ".baseLatticeMatrix") or [None]
+        )[0]
+        if not ltc_base:
+            continue
+        basename = ltc_base.rsplit("_", 1)[0]
+        if ltc_base.endswith("Base"):
+            basename = ltc_base[:-4]
+        ffd = cmds.rename(each, basename + "_ffd")
+        sets = cmds.listConnections(ffd + ".message", plugs=True) or []
+        sets = [x.split(".")[0] for x in sets if "usedBy" in x]
+        for set_ in sets:
+            cmds.rename(set_, ffd + "Set")
 
 
 def transfer_base_weights_api(source, target, src_joint=0, tgt_joint=0):
