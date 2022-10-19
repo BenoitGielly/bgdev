@@ -19,6 +19,8 @@ import bgdev.utils.color
 
 LOG = logging.getLogger(__name__)
 
+CTRL_SET_NAME = "animation_set"
+
 
 def extract_shape_data(node, as_json=False):
     """Extract Maya's shape.cached attribute value.
@@ -80,8 +82,9 @@ def get_all_controls(namespace=""):
     controlers = set()
 
     # get controls using CONTROLS set
-    if cmds.objExists(namespace + ":CONTROLS"):
-        controlers.update(cmds.sets(namespace + ":CONTROLS", query=True) or [])
+    ctrl_set = "{}:{}".format(namespace, CTRL_SET_NAME)
+    if cmds.objExists(ctrl_set):
+        controlers.update(cmds.sets(ctrl_set, query=True) or [])
 
     # get controlers using suffix
     controlers.update(cmds.ls(namespace + ":*_ctrl"))
