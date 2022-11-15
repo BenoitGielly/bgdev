@@ -6,8 +6,10 @@
 import logging
 
 from PySide2 import QtWidgets
-import bgdev.utils.controler
+
 from maya import cmds
+
+import bgdev.utils.controler
 
 LOG = logging.getLogger(__name__)
 
@@ -74,7 +76,10 @@ def atom_export(path, nodes):
         "controlPoints=0;"
         "useChannelBox=1;"
         "options=keys;"
-        "copyKeyCmd=-animation objects -option keys -hierarchy none -controlPoints 0 "
+        "copyKeyCmd=-animation objects "
+        "-option keys "
+        "-hierarchy none "
+        "-controlPoints 0 "
     )
 
     cmds.select(nodes)

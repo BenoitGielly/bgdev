@@ -10,9 +10,6 @@ import os
 import pstats
 import time
 
-from maya import cmds, mel
-from maya.debug import emPerformanceTest  # type: ignore
-
 LOG = logging.getLogger(__name__)
 
 
@@ -23,7 +20,7 @@ def frames_per_second(
     viewports=("viewport2"),
     meshes_only=True,
     outfile=None,
-    force_gpu=True
+    force_gpu=True,
 ):
     """Evaluate the framePerSecond in the current scene.
 
@@ -43,6 +40,10 @@ def frames_per_second(
         float: The evaluated frame per seconds as a float number.
 
     """
+    # pylint: disable=import-outside-toplevel
+    from maya import cmds, mel
+    from maya.debug import emPerformanceTest  # type: ignore
+
     # override Maya's emPerformanceTest method to work with custom viewports
     def switch_maya_viewport(new_mode):
         """Override Maya's method."""
