@@ -5,10 +5,10 @@
 """
 import json
 
+from maya import cmds
+
 import bgdev.utils.controler
 import bgdev.utils.decorator
-from maya import cmds
-import pymel.core as pm
 
 RIG_UNLOCK_LIST = [
     "translate",
@@ -82,6 +82,8 @@ def restore_bindpose(selected=True):
             reset every controls of each selected rigs.
 
     """
+    import pymel.core as pm
+
     nodes = cmds.ls(selection=True)
     if not selected:
         namespaces = set()

@@ -143,6 +143,12 @@ Commons:
               source: |
                   import bgdev.utils.shape
                   bgdev.utils.shape.update_intermediate_callback()
+        - Save Shelf:
+              image: saveToShelf.png
+              label: Shelf
+              source: |
+                  import stim.utils.shelves
+                  stim.utils.shelves.save_current_shelf()
 Rigging:
     visible: true
     type: flow
@@ -368,11 +374,14 @@ Scripts:
         - snapTogether:
               image: snapTogetherTool.png
               source: |
-                  import pymel.core as pm
-                  _selection = pm.selected()
+                  from maya import cmds
+                  _selection = cmds.ls(selection=True)
                   _srcs, _tgt = _selection[:-1], _selection[-1]
+                  if len(_selection) == 1:
+                      _srcs = [_tgt]
                   for each in _srcs:
-                      each.setMatrix(_tgt.getMatrix(worldSpace=1), worldSpace=1)
+                      matrix = cmds.xform(_tgt, query=True, matrix=True, worldSpace=True)
+                      cmds.xform(each, matrix=matrix, worldSpace=True)
               menu:
                   Translate:
                       source: |
@@ -425,13 +434,14 @@ Scripts:
                               cmds.xform(_, t=_position, ro=_rotation, s=_scale, ws=True)
                   All (matrix):
                       source: |
-                          import pymel.core as pm
-                          _selection = pm.selected()
+                          from maya import cmds
+                          _selection = cmds.ls(selection=True)
                           _srcs, _tgt = _selection[:-1], _selection[-1]
                           if len(_selection) == 1:
                               _srcs = [_tgt]
                           for each in _srcs:
-                              each.setMatrix(_tgt.getMatrix(worldSpace=1), worldSpace=1)
+                              matrix = cmds.xform(_tgt, query=True, matrix=True, worldSpace=True)
+                              cmds.xform(each, matrix=matrix, worldSpace=True)
 Work:
     visible: true
     type: json

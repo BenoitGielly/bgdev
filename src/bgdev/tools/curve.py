@@ -3,8 +3,6 @@
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
 
-import pymel.core as pm
-
 
 def curve_from_nodes(degree=2):
     """Create a curve and snap each CVs on each selected nodes.
@@ -15,6 +13,8 @@ def curve_from_nodes(degree=2):
     Returns:
         str: The created curve node.
     """
+    import pymel.core as pm
+
     selection = pm.selected()
 
     points = []
@@ -38,6 +38,8 @@ def get_closest_point(point, node_list):
     Returns:
         str: The closest node.
     """
+    import pymel.core as pm
+
     compare = float("inf")
     flags = {}
     flags.update(query=True, translation=True, worldSpace=True)
@@ -56,6 +58,8 @@ def get_closest_point(point, node_list):
 
 def attach_nodes_to_curve():
     """Attach selected nodes to selected curve."""
+    import pymel.core as pm
+
     selection = pm.selected()
     curve = None
     nodes = []

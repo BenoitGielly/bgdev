@@ -7,10 +7,8 @@
 from functools import partial
 
 from PySide2 import QtWidgets
+
 from maya import cmds
-import pymel.core as pm
-import pymel.core.datatypes as dt
-import pymel.core.nodetypes as nt
 
 
 class PlaneVector(QtWidgets.QDialog):
@@ -93,6 +91,8 @@ class PlaneVector(QtWidgets.QDialog):
 
 
 def mirror_layout():  # pylint: disable=too-many-locals
+    import pymel.core as pm
+
     window = pm.window(title="Vector Plane Tool")
     c = pm.columnLayout(adj=1, p=window)
     b = pm.button(p=c, label="Set")
@@ -147,42 +147,48 @@ def mirrorToolCMD(*args, **kwargs):
 
 
 def vector(*args):
+    import pymel.core as pm
+
     vec = None
     argLen = len(args)
     if argLen == 0:
-        vec = dt.Vector(0)
+        vec = pm.datatypes.Vector(0)
     elif argLen == 1:
-        if isinstance(args[0], dt.Vector):
+        if isinstance(args[0], pm.datatypes.Vector):
             vec = args[0]
         elif isinstance(
-            args[0], (basestring, pm.general.Component, nt.Transform)
+            args[0], (basestring, pm.general.Component, pm.nodetypes.Transform)
         ):
-            vec = dt.Vector(pm.xform(args[0], a=1, ws=True, q=1, t=1))
+            vec = pm.datatypes.Vector(
+                pm.xform(args[0], a=1, ws=True, q=1, t=1)
+            )
         elif isinstance(args[0], (list, tuple)):
-            vec = dt.Vector(args[0])
+            vec = pm.datatypes.Vector(args[0])
     elif argLen == 2:
-        if isinstance(args[0], dt.Vector):
+        if isinstance(args[0], pm.datatypes.Vector):
             vec = args[1] - args[0]
         elif isinstance(
-            args[0], (basestring, pm.general.Component, nt.Transform)
+            args[0], (basestring, pm.general.Component, pm.nodetypes.Transform)
         ):
-            a = dt.Vector(pm.xform(args[0], a=1, ws=True, q=1, t=1))
-            b = dt.Vector(pm.xform(args[1], a=1, ws=True, q=1, t=1))
+            a = pm.datatypes.Vector(pm.xform(args[0], a=1, ws=True, q=1, t=1))
+            b = pm.datatypes.Vector(pm.xform(args[1], a=1, ws=True, q=1, t=1))
             vec = b - a
         elif isinstance(args[0], (list, tuple)):
-            a = dt.Vector(args[0])
-            b = dt.Vector(args[1])
+            a = pm.datatypes.Vector(args[0])
+            b = pm.datatypes.Vector(args[1])
             vec = b - a
     elif argLen > 2 and isinstance(args[0], (int, float)):
-        vec = dt.Vector(args[:3])
+        vec = pm.datatypes.Vector(args[:3])
     return vec
 
 
 def get_mirrorvector(obj, **kwargs):
+    import pymel.core as pm
+
     mirList = kwargs.get("mirror", None)
     if isinstance(mirList[0], (list, tuple)):
         mVecList = map(vector, mirList)
-    elif isinstance(mirList[0], dt.Vector):
+    elif isinstance(mirList[0], pm.datatypes.Vector):
         mVecList = mirList
     else:
         return None
@@ -197,16 +203,16 @@ def get_mirrorvector(obj, **kwargs):
         eVec = pVec - mVecList[1]
         nMag = nVec.length()
         if nMag > 0:
-            xVec = nVec * ((eVec * nVec) / nMag ** 2.0)
+            xVec = nVec * ((eVec * nVec) / nMag**2.0)
         else:
-            xVec = dt.Vector(0)
+            xVec = pm.datatypes.Vector(0)
     elif len(mVecList) == 3:
         aVec = mVecList[0] - mVecList[1]
         bVec = mVecList[0] - mVecList[2]
         nVec = aVec ^ bVec
         eVec = pVec - mVecList[0]
         nMag = nVec.length()
-        xVec = nVec * ((eVec * nVec) / nMag ** 2.0)
+        xVec = nVec * ((eVec * nVec) / nMag**2.0)
     vec = (pVec - xVec) + (xVec * scl)
     return vec
 

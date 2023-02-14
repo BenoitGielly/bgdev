@@ -3,11 +3,12 @@
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 
 """
-from functools import partial
 import logging
+from functools import partial
 from math import sin, sqrt
 
 from PySide2 import QtWidgets
+
 from maya import cmds
 from maya.api import OpenMaya
 
@@ -258,7 +259,6 @@ def align_fingers(
 ):
     """Align selection based on first and last plane (use for fingers)."""
     import pymel.core as pm
-    import pymel.core.datatypes as dt
 
     # pylint: disable=too-many-locals, eval-used
     if gui is True:
@@ -294,9 +294,9 @@ def align_fingers(
 
     # find AH distance
     index = len(selection) // 2
-    pt_a = dt.Point(selection[0].getTranslation(space="world"))
-    pt_b = dt.Point(selection[index].getTranslation(space="world"))
-    pt_c = dt.Point(selection[-1].getTranslation(space="world"))
+    pt_a = pm.datatypes.Point(selection[0].getTranslation(space="world"))
+    pt_b = pm.datatypes.Point(selection[index].getTranslation(space="world"))
+    pt_c = pm.datatypes.Point(selection[-1].getTranslation(space="world"))
 
     c_side = pt_b - pt_a
     b_side = pt_c - pt_a
