@@ -5,7 +5,59 @@
 from maya import cmds
 from maya.api import OpenMaya
 
-from . import attribute, core, deformer
+from . import attribute, core, deformer, mesh
+
+
+def reconnect_blendshape(blendshape, geometry):
+    """Reconnect blendshape node to given geometry.
+
+    Args:
+        blendshape (str): Name of blendshape node.
+        geometry (str): Geometry to apply blendshape to (same topology).
+    """
+    dummy_geo = mesh.duplicate_mesh(geometry)
+    dummy_bs = cmds.blendShape(dummy_geo, geometry)[0]
+
+    # connect the groupParts to the blendshape.
+    modifier = OpenMaya.MDGModifier()
+    src_plug = dummy_bs + ".input[0].inputGeometry"
+    src_plug = core.as_plug(src_plug).source()
+    plug = core.as_plug(blendshape + ".input[0].inputGeometry")
+    modifier.connect(src_plug, plug)
+    modifier.renameNode(src_plug.node(), blendshape + "GroupParts")
+    modifier.doIt()
+
+    # Connect the groupId to the blendshape.
+    src_plug = dummy_bs + ".input[0].groupId"
+    src_plug = core.as_plug(src_plug).source()
+    plug = core.as_plug(blendshape + ".input[0].groupId")
+    modifier.connect(src_plug, plug)
+    modifier.renameNode(src_plug.node(), blendshape + "GroupId")
+    modifier.doIt()
+
+    # Connect the message and rename the set.
+    deformset = core.as_filter(dummy_bs).deformerSet
+    node = core.as_node(deformset)
+    plug = node.findPlug("usedBy", 0)
+    plug.selectAncestorLogicalIndex(0)
+    modifier.disconnect(plug.source(), plug)
+    msg_plug = core.as_plug(blendshape + ".message")
+    modifier.connect(msg_plug, plug)
+    modifier.renameNode(plug.node(), blendshape + "Set")
+    modifier.doIt()
+
+    # Connect the blendshape output to the geometry.
+    dag = core.as_dag(geometry, to_shape=True)
+    node = core.as_node(dag)
+    name = "create" if node.typeName == "nurbsCurve" else "inMesh"
+    plug = node.findPlug(name, 0)
+    modifier.disconnect(plug.source(), plug)
+    outplug = core.as_plug(blendshape + ".outputGeometry[0]")
+    modifier.connect(outplug, plug)
+    modifier.doIt()
+
+    # delete nodes (using modifier.deleteNode is unstable)
+    cmds.delete(dummy_geo, dummy_bs)
 
 
 def fix_target_names(blendshape):
