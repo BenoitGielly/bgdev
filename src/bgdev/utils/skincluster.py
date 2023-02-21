@@ -7,9 +7,10 @@ from __future__ import absolute_import
 
 import logging
 
+from maya import cmds, mel
+
 import bgdev.utils.decorator
 import bgdev.utils.shape
-from maya import cmds, mel
 
 LOG = logging.getLogger(__name__)
 
@@ -41,11 +42,19 @@ def get_skincluster(node):
         str: The skincluster bound to the node.
 
     """
-    skincluster = node
+    skincluster = None
     if cmds.nodeType(node) != "skinCluster":
         skincluster = mel.eval("findRelatedSkinCluster {0}".format(node))
 
-    return skincluster
+    if not skincluster:
+        skinclusters = set()
+        for each in cmds.ls(node, dagObjects=True):
+            connections = cmds.listConnections(each, type="skinCluster") or []
+            skinclusters.update(connections)
+        if skinclusters:
+            skincluster = sorted(skinclusters)[0]
+
+    return skincluster or node
 
 
 def get_influences(node, weighted=False):
