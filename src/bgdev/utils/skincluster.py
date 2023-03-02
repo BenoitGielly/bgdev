@@ -54,7 +54,9 @@ def get_skincluster(node):
         if skinclusters:
             skincluster = sorted(skinclusters)[0]
 
-    return skincluster or node
+    if skincluster and cmds.nodeType(skincluster) == "skinCluster":
+        return skincluster
+    return None
 
 
 def get_influences(node, weighted=False):
