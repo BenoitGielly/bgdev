@@ -42,6 +42,9 @@ def get_skincluster(node):
         str: The skincluster bound to the node.
 
     """
+    if cmds.nodeType(node) == "skinCluster":
+        return node
+
     skincluster = None
     if cmds.nodeType(node) != "skinCluster":
         skincluster = mel.eval("findRelatedSkinCluster {0}".format(node))
