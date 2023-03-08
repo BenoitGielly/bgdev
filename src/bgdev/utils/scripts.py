@@ -414,10 +414,10 @@ def change_default_clip_plane():
         label.setMinimumWidth(60)
         field = QtWidgets.QDoubleSpinBox()
         if name == "Near":
-            field.setMinimum(0.0000000001)
+            field.setMinimum(0.00000001)
             field.setDecimals(4)
         else:
-            field.setMaximum(10000000000)
+            field.setMaximum(1000000000)
             field.setDecimals(0)
         field.setValue(
             cmds.optionVar(query="defaultCamera{}ClipValue".format(name))
