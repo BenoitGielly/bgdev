@@ -149,6 +149,25 @@ Commons:
               source: |
                   import stim.utils.shelves
                   stim.utils.shelves.save_current_shelf()
+        - Set:
+              image: setEdit.png
+              label: Sets
+              source: |
+                  from maya import cmds
+                  set_ = cmds.sets(name="Set")
+                  cmds.setAttr(set_ + ".ihi", 2)
+              menu:
+                  Add:
+                      source: |
+                          from maya import cmds
+                          _selection = cmds.ls(sl=1)
+                          cmds.sets(_selection[0:-1], add=_selection[-1])
+                  Remove:
+                      source: |
+                          from maya import cmds
+                          _selection = cmds.ls(sl=1)
+                          cmds.sets(_selection[0:-1], rm=_selection[-1])
+
 Rigging:
     visible: true
     type: flow
