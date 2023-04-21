@@ -19,12 +19,15 @@ still work.
 """
 import os
 
-from PySide2 import QtCore, QtWidgets
-from maya import OpenMayaUI, cmds, mel
 import shiboken2
+from PySide2 import QtCore, QtWidgets
+
+from maya import OpenMayaUI, cmds, mel
 
 
 def load_plugin():
+    if cmds.pluginInfo("edgeFlowMirror", query=True, loaded=True):
+        return
     plugin_path = os.path.join(os.path.dirname(__file__), "edgeFlowMirror.py")
     try:
         cmds.loadPlugin(plugin_path, quiet=True)
@@ -65,8 +68,7 @@ class EdgeFlowMirrorUI(QtWidgets.QDialog):
     def __init__(self, parent=get_maya_window()):
         super(EdgeFlowMirrorUI, self).__init__(parent)
 
-        app = QtWidgets.QApplication.instance()
-        screen = app.screens()[0]
+        screen = QtWidgets.QApplication.screens()[0]
         self.dpi_scale = screen.logicalDotsPerInch() / 100.0
 
         mid_edge_lyt = QtWidgets.QBoxLayout(QtWidgets.QBoxLayout.LeftToRight)
