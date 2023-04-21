@@ -6,29 +6,59 @@
 import logging
 import sys
 
-LOG = logging.getLogger(__name__)
-LOG.handlers = []
-LOG.propagate = False
+from maya import OpenMaya
 
 LOG_FORMATTER = logging.Formatter(
     fmt="(%(asctime)s) %(levelname)s [%(name)s.%(funcName)s]: %(message)s",
     datefmt="%H:%M:%S",
 )
 
-# add Maya UI handler if not in batch mode
-try:
-    from maya import cmds
 
-    if not cmds.about(batch=True):
-        LOG_STREAM_HANDLER = logging.StreamHandler()
-        LOG_STREAM_HANDLER.setLevel("INFO")
-        LOG_STREAM_HANDLER.setFormatter(LOG_FORMATTER)
-        LOG.addHandler(LOG_STREAM_HANDLER)
-except ImportError:
-    pass
+class MayaLogHandler(logging.StreamHandler):
+    """Custom logging handler for Maya to display messages in color."""
 
-# always add stdout handler
-LOG_STD_OUT_HANDLER = logging.StreamHandler(sys.__stdout__)
-LOG_STD_OUT_HANDLER.setLevel("INFO")
-LOG_STD_OUT_HANDLER.setFormatter(LOG_FORMATTER)
-LOG.addHandler(LOG_STD_OUT_HANDLER)
+    def display_maya_message(self, message, level):
+        """Display a message using OpenMaya."""
+        if level > logging.ERROR:
+            OpenMaya.MGlobal.displayError(message)
+        elif level > logging.WARNING:
+            OpenMaya.MGlobal.displayError(message)
+        elif level > logging.INFO:
+            OpenMaya.MGlobal.displayWarning(message)
+        elif level <= logging.DEBUG:
+            OpenMaya.MGlobal.displayInfo(message)
+        else:
+            OpenMaya.MGlobal.displayInfo(message)
+
+    def emit(self, record):
+        """Overwrite the emit function to display message in Maya."""
+        msg = self.format(record)
+        self.display_maya_message(msg, record.levelno)
+        super(MayaLogHandler, self).emit(record)
+
+
+def getLogger(name):  # pylint: disable=invalid-name
+    """Backward camelCase compatibility with logging module."""
+    return get_logger(name)
+
+
+def get_logger(name):
+    """Create an instance of the Stim logger."""
+    logger = logging.getLogger(name)
+    configure_logger(logger)
+    return logger
+
+
+def configure_logger(logger):
+    """Update given logger handlers."""
+    handler = MayaLogHandler(sys.__stdout__)
+    handler.setLevel("INFO")
+    handler.setFormatter(LOG_FORMATTER)
+    logger.handlers = []
+    logger.addHandler(handler)
+    logger.propagate = False
+
+
+# create custom logger
+LOG = logging.getLogger("bgdev")
+configure_logger(LOG)
