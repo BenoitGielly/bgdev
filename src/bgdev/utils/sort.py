@@ -13,7 +13,7 @@ from maya import cmds
 LOG = logging.getLogger(__name__)
 
 
-def _as_int(text):
+def as_int(text):
     """Convert text to integer."""
     return int(text) if text.isdigit() else text
 
@@ -32,7 +32,12 @@ def _human(text):
         list: List of integers to be used as a sorting key.
 
     """
-    result = [_as_int(x) for x in re.split(r"(\d+)", text) if x.isdigit()]
+    return [as_int(c) for c in re.split("([0-9]+)", text)]
+
+
+def _human2(text):
+    """Old algorithm, didn't work in all cases."""
+    result = [as_int(x) for x in re.split(r"(\d+)", text) if x.isdigit()]
     return result[-1] if result else None
 
 
