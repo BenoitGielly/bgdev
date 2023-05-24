@@ -201,7 +201,10 @@ def show_joint_orient(value=True):
     """Display jointOrient attributes in channel box."""
     for each in cmds.ls(type="joint"):
         for plug in [each + ".jo" + x for x in "xyz"]:
-            cmds.setAttr(plug, channelBox=value)
+            try:
+                cmds.setAttr(plug, channelBox=value)
+            except RuntimeError:
+                pass
 
 
 def find_bad_meshes():
