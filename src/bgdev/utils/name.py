@@ -108,8 +108,8 @@ def rename_deformers_callback():
     """Call back :func:`rename_deformers`."""
     selection = cmds.ls(selection=True)
     if not selection:
-        LOG.warning("Please select something!")
-        return
+        selection = cmds.ls("*_geo")
+        LOG.warning("Nothing selected, using *_geo")
 
     for each in selection:
         rename_deformers(each)

@@ -183,8 +183,6 @@ class RenamerUi(QtWidgets.QDialog):
     def setup_ui(self):  # pylint: disable=too-many-statements, too-many-locals
         """Create widgets."""
         main_layout = QtWidgets.QVBoxLayout(self)
-        main_layout.setSpacing(2)
-        main_layout.setContentsMargins(2, 2, 2, 2)
 
         # --- HASH RENAME
         hash_box = GroupBox("Hash rename", color="None")
