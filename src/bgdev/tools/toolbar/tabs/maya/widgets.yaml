@@ -5,13 +5,13 @@ CrossCopy:
         import bgdev.tools.crosscopy
         return bgdev.tools.crosscopy.CrossCopyUI
 Renamer:
-    visible: false
+    visible: true
     type: custom
     source: |
         import bgdev.tools.renamer.core
         return bgdev.tools.renamer.core.Renamer
 Uniloop:
-    visible: false
+    visible: true
     type: custom
     source: |
         import bgdev.tools.uniloop

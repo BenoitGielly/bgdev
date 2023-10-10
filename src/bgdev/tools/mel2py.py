@@ -5,8 +5,6 @@
 """
 from __future__ import print_function
 
-import pymel.tools.mel2py
-
 
 def convert_command(command, namespace="cmds", verbose=True):
     """Convert mel command-string to python.
@@ -19,6 +17,8 @@ def convert_command(command, namespace="cmds", verbose=True):
     Returns:
         str: The convert mel command to python.
     """
+    import pymel.tools.mel2py
+
     cmd = pymel.tools.mel2py.mel2pyStr(command, pymelNamespace=namespace)
     if verbose:
         print(cmd)  # noqa
@@ -35,6 +35,8 @@ def convert_file(files, force_compatibility=True):
             an impact or not so adding it as a kwarg just in case.
 
     """
+    import pymel.tools.mel2py
+
     for each in files:
         with open(each, "r") as stream:
             content = stream.read()
