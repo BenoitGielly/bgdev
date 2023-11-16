@@ -20,7 +20,7 @@ still work.
 import math
 import sys
 
-from maya import cmds, OpenMaya, OpenMayaAnim, OpenMayaMPx
+from maya import OpenMaya, OpenMayaAnim, OpenMayaMPx, cmds
 
 # name our command
 kPluginCmdName = "edgeFlowMirror"
@@ -48,7 +48,6 @@ edgeFlowMirrorNewBaseObjectName = ""
 
 
 class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
-
     def __init__(self):
         OpenMayaMPx.MPxCommand.__init__(self)
         self.old_target_points = OpenMaya.MFloatVectorArray()
@@ -65,12 +64,13 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
 
     def manipulate_object(self, redo):
         if self.task.startswith("geometry"):
-
             target_point_array = OpenMaya.MPointArray()
             target_object_dag_path = OpenMaya.MDagPath()
 
             fn_target_mesh = OpenMaya.MFnMesh(self.target_obj)
-            OpenMaya.MFnDagNode(self.target_obj).getPath(target_object_dag_path)
+            OpenMaya.MFnDagNode(self.target_obj).getPath(
+                target_object_dag_path
+            )
             fn_target_mesh.getPoints(target_point_array)
             point_index = 0
             if redo:
@@ -93,7 +93,9 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                     )
                     point_index += 1
 
-            fn_target_mesh.setPoints(target_point_array, OpenMaya.MSpace.kObject)
+            fn_target_mesh.setPoints(
+                target_point_array, OpenMaya.MSpace.kObject
+            )
             fn_target_mesh.updateSurface()
 
         if self.task == "skinCluster":
@@ -111,7 +113,7 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                     self.vtx_components,
                     influence_indices,
                     self.weight_array,
-                    0
+                    0,
                 )
             else:
                 fn_skin_cluster.setWeights(
@@ -119,7 +121,7 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                     self.vtx_components,
                     influence_indices,
                     self.old_weight_array,
-                    0
+                    0,
                 )
 
     def doIt(self, args):
@@ -133,9 +135,7 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
         base_object_name = ""
 
         syntax = OpenMaya.MSyntax()
-        syntax.addFlag(
-            kTaskFlag, kTaskFlagLong, OpenMaya.MSyntax.kString
-        )
+        syntax.addFlag(kTaskFlag, kTaskFlagLong, OpenMaya.MSyntax.kString)
         syntax.addFlag(
             kDirectionFlag, kDirectionFlagLong, OpenMaya.MSyntax.kDouble
         )
@@ -146,13 +146,19 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
             kBaseObjectFlag, kBaseObjectFlagLong, OpenMaya.MSyntax.kString
         )
         syntax.addFlag(
-            kBaseVertexSpaceFlag, kBaseVertexSpaceFlagLong, OpenMaya.MSyntax.kBoolean
+            kBaseVertexSpaceFlag,
+            kBaseVertexSpaceFlagLong,
+            OpenMaya.MSyntax.kBoolean,
         )
         syntax.addFlag(
-            kLeftJointsPrefixFlag, kLeftJointsPrefixFlagLong, OpenMaya.MSyntax.kString
+            kLeftJointsPrefixFlag,
+            kLeftJointsPrefixFlagLong,
+            OpenMaya.MSyntax.kString,
         )
         syntax.addFlag(
-            kRightJointsPrefixFlag, kRightJointsPrefixFlagLong, OpenMaya.MSyntax.kString
+            kRightJointsPrefixFlag,
+            kRightJointsPrefixFlagLong,
+            OpenMaya.MSyntax.kString,
         )
         syntax.addFlag(
             kOptimizeFlag, kOptimizeFlagLong, OpenMaya.MSyntax.kBoolean
@@ -174,13 +180,19 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
             base_object_name = arg_data.flagArgumentString(kBaseObjectFlag, 0)
 
         if arg_data.isFlagSet(kBaseVertexSpaceFlag):
-            do_vertex_space = arg_data.flagArgumentBool(kBaseVertexSpaceFlag, 0)
+            do_vertex_space = arg_data.flagArgumentBool(
+                kBaseVertexSpaceFlag, 0
+            )
 
         if arg_data.isFlagSet(kLeftJointsPrefixFlag):
-            search_string = arg_data.flagArgumentString(kLeftJointsPrefixFlag, 0)
+            search_string = arg_data.flagArgumentString(
+                kLeftJointsPrefixFlag, 0
+            )
 
         if arg_data.isFlagSet(kRightJointsPrefixFlag):
-            replace_string = arg_data.flagArgumentString(kRightJointsPrefixFlag, 0)
+            replace_string = arg_data.flagArgumentString(
+                kRightJointsPrefixFlag, 0
+            )
 
         if arg_data.isFlagSet(kOptimizeFlag):
             do_optimize = arg_data.flagArgumentString(kOptimizeFlag, 0)
@@ -213,12 +225,20 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
         global edgeFlowMirrorSavedSideArray
         global edgeFlowMirrorNewBaseObjectName
 
-        if do_optimize and len(edgeFlowMirrorSavedMapArray) and self.task != "compute":
+        if (
+            do_optimize
+            and len(edgeFlowMirrorSavedMapArray)
+            and self.task != "compute"
+        ):
             map_array = edgeFlowMirrorSavedMapArray
             side_array = edgeFlowMirrorSavedSideArray
             new_base_object_name = edgeFlowMirrorNewBaseObjectName
         else:
-            map_array, side_array, new_base_object_name = self.analyze_topology(middle_edge)
+            (
+                map_array,
+                side_array,
+                new_base_object_name,
+            ) = self.analyze_topology(middle_edge)
             edgeFlowMirrorSavedMapArray = map_array
             edgeFlowMirrorSavedSideArray = side_array
             edgeFlowMirrorNewBaseObjectName = new_base_object_name
@@ -277,7 +297,9 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
             all_points_array[both_indexes[i]] = i
 
         fn_vtx_comp = OpenMaya.MFnSingleIndexedComponent()
-        self.vtx_components = fn_vtx_comp.create(OpenMaya.MFn.kMeshVertComponent)
+        self.vtx_components = fn_vtx_comp.create(
+            OpenMaya.MFn.kMeshVertComponent
+        )
         vertex_indices = []
         skin_path = OpenMaya.MDagPath()
 
@@ -292,7 +314,10 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
             while not it.isDone():
                 fn_skin_cluster = OpenMayaAnim.MFnSkinCluster(it.item())
                 fn_skin_cluster.getPathAtIndex(0, skin_path)
-                if OpenMaya.MFnDagNode(skin_path.node()).partialPathName() == object_name:
+                if (
+                    OpenMaya.MFnDagNode(skin_path.node()).partialPathName()
+                    == object_name
+                ):
                     self.skin_cluster = it.item()
                 it.next()
 
@@ -373,23 +398,35 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                 start_index_b = i * self.inf_count
 
                 # not middle
-                if side_array[index] == direction and map_array[index] != index:
-                    opposite_index = all_points_array[map_array[both_indexes[i]]]
+                if (
+                    side_array[index] == direction
+                    and map_array[index] != index
+                ):
+                    opposite_index = all_points_array[
+                        map_array[both_indexes[i]]
+                    ]
                     start_index_a = opposite_index * self.inf_count
 
                     for k in range(self.inf_count):
-                        self.weight_array[start_index_a + k] = self.weight_array[
-                            start_index_b + joint_map_array[k]]
+                        self.weight_array[
+                            start_index_a + k
+                        ] = self.weight_array[
+                            start_index_b + joint_map_array[k]
+                        ]
 
                 # middle one
                 elif map_array[index] == index:
                     for k in range(self.inf_count):
                         average_weights[k] = (
                             self.weight_array[start_index_b + k]
-                            + self.weight_array[start_index_b + joint_map_array[k]]
+                            + self.weight_array[
+                                start_index_b + joint_map_array[k]
+                            ]
                         ) * 0.5
                     for k in range(self.inf_count):
-                        self.weight_array[start_index_b + k] = average_weights[k]
+                        self.weight_array[start_index_b + k] = average_weights[
+                            k
+                        ]
 
             print("[edgeFlowMirror] skinCluster mirroring complete.")
 
@@ -422,7 +459,9 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
             fn_target_mesh = OpenMaya.MFnMesh(self.target_obj)
 
             target_object_dag_path = OpenMaya.MDagPath()
-            OpenMaya.MFnDagNode(self.target_obj).getPath(target_object_dag_path)
+            OpenMaya.MFnDagNode(self.target_obj).getPath(
+                target_object_dag_path
+            )
 
             target_points = OpenMaya.MPointArray()
             fn_target_mesh.getPoints(target_points, OpenMaya.MSpace.kObject)
@@ -448,19 +487,23 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                     for i in range(len(both_indexes)):
                         opp_index = both_indexes[i]
 
-                        if mirror_int == 0 or direction == side_array[opp_index]:
+                        if (
+                            mirror_int == 0
+                            or direction == side_array[opp_index]
+                        ):
                             opp_map = map_array[opp_index]
                             offset = (
-                                target_points[opp_index] - base_points[opp_index]
+                                target_points[opp_index]
+                                - base_points[opp_index]
                             )
 
                             self.new_target_points.set(
                                 OpenMaya.MFloatVector(
                                     base_points[opp_map].x - offset.x,
                                     base_points[opp_map].y + offset.y,
-                                    base_points[opp_map].z + offset.z
+                                    base_points[opp_map].z + offset.z,
                                 ),
-                                opp_map
+                                opp_map,
                             )
 
                 elif do_vertex_space:
@@ -489,7 +532,9 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                         vec.normalize()
                         base_normals[i] = OpenMaya.MVector(vec)
 
-                    target_vertex_iter = OpenMaya.MItMeshVertex(self.target_obj)
+                    target_vertex_iter = OpenMaya.MItMeshVertex(
+                        self.target_obj
+                    )
                     for i in range(vert_count):
                         vec = OpenMaya.MVector()
                         target_vertex_iter.getNormal(vec)
@@ -531,7 +576,10 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                             - target_points[map_array[b_index]]
                         ).length()
 
-                        if points_threshold < 0.00001 and map_threshold < 0.00001:
+                        if (
+                            points_threshold < 0.00001
+                            and map_threshold < 0.00001
+                        ):
                             do_skip_this_one = True
 
                         if do_skip_this_one:
@@ -559,18 +607,26 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                             two_vecs = [None, None]
 
                             for vert in verts_on_faces[face]:
-                                if vert != b_index and vert in con_verts[b_index]:
+                                if (
+                                    vert != b_index
+                                    and vert in con_verts[b_index]
+                                ):
                                     for d in range(2):
                                         if two_dots[d] == -1:
                                             two_dots[d] = vert
                                             two_vecs[d] = OpenMaya.MVector(
-                                                base_points[vert] - average_pos)
+                                                base_points[vert] - average_pos
+                                            )
                                             break
 
                             # skip face if it's from middle vertex and not along middle edges
                             #
                             dot_0, dot_1 = two_dots
-                            if not side_index and side_array[dot_0] and side_array[dot_1]:
+                            if (
+                                not side_index
+                                and side_array[dot_0]
+                                and side_array[dot_1]
+                            ):
                                 continue
 
                             if f == 0:
@@ -599,13 +655,19 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                                     x_id.append(dot_0)
                                     z_id.append(dot_1)
                                     x_neg.append(angle_0_neg)
-                                    z_neg.append(two_vecs[1].angle(first_vecs[1]) > math.pi * 0.5)
+                                    z_neg.append(
+                                        two_vecs[1].angle(first_vecs[1])
+                                        > math.pi * 0.5
+                                    )
 
                                 else:
                                     x_id.append(dot_1)
                                     z_id.append(dot_0)
                                     x_neg.append(angle_1_neg)
-                                    z_neg.append(two_vecs[0].angle(first_vecs[1]) > math.pi * 0.5)
+                                    z_neg.append(
+                                        two_vecs[0].angle(first_vecs[1])
+                                        > math.pi * 0.5
+                                    )
 
                         x_ids[b_index] = x_id
                         z_ids[b_index] = z_id
@@ -640,9 +702,7 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                         z_negs[b_index] = z_negs[map_array[b_index]]
 
                     for i in range(both_indexes.length()):
-
                         if map_array[both_indexes[i]] != -2:
-
                             b_index = both_indexes[i]
 
                             if skips[b_index]:
@@ -684,7 +744,9 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
 
                                 base_mat = create_matrix_from_list(
                                     [
-                                        base_x.x, base_x.y, base_x.z,
+                                        base_x.x,
+                                        base_x.y,
+                                        base_x.z,
                                         0,
                                         base_normals[b_index].x,
                                         base_normals[b_index].y,
@@ -703,10 +765,11 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                                 change_world = create_matrix_from_pos(
                                     target_points[b_index]
                                 )
-                                change_local = change_world * base_mat.inverse()
+                                change_local = (
+                                    change_world * base_mat.inverse()
+                                )
 
                                 if side_index == 0:  # middle vertex
-
                                     middle_id = -1
                                     for nId in x_ids[b_index] + z_ids[b_index]:
                                         if side_array[nId] == 0:
@@ -716,7 +779,8 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                                     # check which angle is closer
                                     #
                                     middle_id_vect = OpenMaya.MVector(
-                                        base_points[middle_id] - base_points[b_index]
+                                        base_points[middle_id]
+                                        - base_points[b_index]
                                     )
                                     angle_x = middle_id_vect.angle(base_x)
                                     angle_z = middle_id_vect.angle(base_z)
@@ -726,19 +790,23 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                                         angle_z = math.pi - angle_z
 
                                     if angle_x < angle_z:
-                                        centered_local = create_matrix_from_pos(
-                                            OpenMaya.MPoint(
-                                                change_local(3, 0),
-                                                change_local(3, 1),
-                                                -change_local(3, 2)
+                                        centered_local = (
+                                            create_matrix_from_pos(
+                                                OpenMaya.MPoint(
+                                                    change_local(3, 0),
+                                                    change_local(3, 1),
+                                                    -change_local(3, 2),
+                                                )
                                             )
                                         )
                                     else:
-                                        centered_local = create_matrix_from_pos(
-                                            OpenMaya.MPoint(
-                                                -change_local(3, 0),
-                                                change_local(3, 1),
-                                                change_local(3, 2)
+                                        centered_local = (
+                                            create_matrix_from_pos(
+                                                OpenMaya.MPoint(
+                                                    -change_local(3, 0),
+                                                    change_local(3, 1),
+                                                    change_local(3, 2),
+                                                )
                                             )
                                         )
 
@@ -765,14 +833,18 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
 
                                         target_x += (
                                             OpenMaya.MVector(
-                                                base_points[x_ids[mapped_b_index][k]]
+                                                base_points[
+                                                    x_ids[mapped_b_index][k]
+                                                ]
                                                 - base_points[mapped_b_index]
                                             )
                                         ) * x_mult
 
                                         target_z += (
                                             OpenMaya.MVector(
-                                                base_points[z_ids[mapped_b_index][k]]
+                                                base_points[
+                                                    z_ids[mapped_b_index][k]
+                                                ]
                                                 - base_points[mapped_b_index]
                                             )
                                         ) * z_mult
@@ -800,7 +872,7 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                                             base_points[mapped_b_index].x,
                                             base_points[mapped_b_index].y,
                                             base_points[mapped_b_index].z,
-                                            1
+                                            1,
                                         ]
                                     )
                                     change_target = change_local * target_mat
@@ -809,7 +881,7 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                                     OpenMaya.MFloatVector(
                                         change_target(3, 0),
                                         change_target(3, 1),
-                                        change_target(3, 2)
+                                        change_target(3, 2),
                                     ),
                                     mapped_b_index,
                                 )
@@ -825,10 +897,15 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                     target_vector = target_points[both_indexes[i]]
                     map_index = map_array[both_indexes[i]]
                     if map_index != -1:
-
-                        x = (target_vector.x + target_points[map_index].x) * 0.5
-                        y = (target_vector.y + target_points[map_index].y) * 0.5
-                        z = (target_vector.z + target_points[map_index].z) * 0.5
+                        x = (
+                            target_vector.x + target_points[map_index].x
+                        ) * 0.5
+                        y = (
+                            target_vector.y + target_points[map_index].y
+                        ) * 0.5
+                        z = (
+                            target_vector.z + target_points[map_index].z
+                        ) * 0.5
                         target_vector.x = x
                         target_vector.y = y
                         target_vector.z = z
@@ -850,14 +927,16 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                             OpenMaya.MFloatVector(
                                 target_vector.x,
                                 target_vector.y,
-                                target_vector.z
+                                target_vector.z,
                             ),
                             both_indexes[i],
                         )
 
                 # selecting wrong points:
                 fn_vtx_comp = OpenMaya.MFnSingleIndexedComponent()
-                self.vtx_components = fn_vtx_comp.create(OpenMaya.MFn.kMeshVertComponent)
+                self.vtx_components = fn_vtx_comp.create(
+                    OpenMaya.MFn.kMeshVertComponent
+                )
                 select_points = OpenMaya.MSelectionList()
 
                 missing_points = False
@@ -951,21 +1030,21 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
 
         # create statusbar
         #
-        status_window = cmds.window(title="Finding Opposite Vertices")
-        cmds.columnLayout()
+        # status_window = cmds.window(title="Finding Opposite Vertices")
+        # cmds.columnLayout()
 
-        progress_control = cmds.progressBar(maxValue=10, width=300)
+        # progress_control = cmds.progressBar(maxValue=10, width=300)
 
-        cmds.showWindow(status_window)
+        # cmds.showWindow(status_window)
         steps_count = 100
-        cmds.progressBar(
-            progress_control,
-            edit=True,
-            beginProgress=True,
-            isInterruptable=True,
-            status="Finding Mirrored Vertices",
-            maxValue=steps_count
-        )
+        # cmds.progressBar(
+        #     progress_control,
+        #     edit=True,
+        #     beginProgress=True,
+        #     isInterruptable=True,
+        #     status="Finding Mirrored Vertices",
+        #     maxValue=steps_count
+        # )
 
         step_size = (edge_count / 2) / 100
         step_increment = 0
@@ -982,15 +1061,15 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
 
         while True:
             if l_edge_queue.length() == 0:
-                cmds.progressBar(progress_control, edit=True, endProgress=True)
-                cmds.deleteUI(status_window, window=True)
+                # cmds.progressBar(progress_control, edit=True, endProgress=True)
+                # cmds.deleteUI(status_window, window=True)
                 break
 
             # progressbar
             #
             step_increment += 1
             if step_increment >= step_size:
-                cmds.progressBar(progress_control, edit=True, step=1)
+                # cmds.progressBar(progress_control, edit=True, step=1)
                 step_increment = 0
 
             l_current_e = l_edge_queue[0]
@@ -1010,11 +1089,20 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
             edge_iter.getConnectedFaces(l_face_list)
             if len(l_face_list) == 1:
                 l_current_p = l_face_list[0]
-            elif checked_p[l_face_list[0]] == -1 and checked_p[l_face_list[1]] != -1:
+            elif (
+                checked_p[l_face_list[0]] == -1
+                and checked_p[l_face_list[1]] != -1
+            ):
                 l_current_p = l_face_list[0]
-            elif checked_p[l_face_list[1]] == -1 and checked_p[l_face_list[0]] != -1:
+            elif (
+                checked_p[l_face_list[1]] == -1
+                and checked_p[l_face_list[0]] != -1
+            ):
                 l_current_p = l_face_list[1]
-            elif checked_p[l_face_list[0]] == -1 and checked_p[l_face_list[1]] == -1:
+            elif (
+                checked_p[l_face_list[0]] == -1
+                and checked_p[l_face_list[1]] == -1
+            ):
                 l_current_p = l_face_list[0]
                 checked_p[l_current_p] = -2
 
@@ -1023,47 +1111,87 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
             edge_iter.getConnectedFaces(r_face_list)
             if len(r_face_list) == 1:
                 r_current_p = r_face_list[0]
-            elif checked_p[r_face_list[0]] == -1 and checked_p[r_face_list[1]] != -1:
+            elif (
+                checked_p[r_face_list[0]] == -1
+                and checked_p[r_face_list[1]] != -1
+            ):
                 r_current_p = r_face_list[0]
-            elif checked_p[r_face_list[1]] == -1 and checked_p[r_face_list[0]] != -1:
+            elif (
+                checked_p[r_face_list[1]] == -1
+                and checked_p[r_face_list[0]] != -1
+            ):
                 r_current_p = r_face_list[1]
-            elif checked_p[r_face_list[1]] == -1 and checked_p[r_face_list[0]] == -1:
+            elif (
+                checked_p[r_face_list[1]] == -1
+                and checked_p[r_face_list[0]] == -1
+            ):
                 return OpenMaya.MStatus.kFailure
-            elif checked_p[r_face_list[1]] != -1 and checked_p[r_face_list[0]] != -1:
+            elif (
+                checked_p[r_face_list[1]] != -1
+                and checked_p[r_face_list[0]] != -1
+            ):
                 continue
 
             checked_p[r_current_p] = l_current_p
             checked_p[l_current_p] = r_current_p
 
             fn_mesh.getEdgeVertices(l_current_e, l_edge_vertices)
-            l_edge_vertices_0 = script_util.getInt2ArrayItem(l_edge_vertices, 0, 0)
-            l_edge_vertices_1 = script_util.getInt2ArrayItem(l_edge_vertices, 0, 1)
+            l_edge_vertices_0 = script_util.getInt2ArrayItem(
+                l_edge_vertices, 0, 0
+            )
+            l_edge_vertices_1 = script_util.getInt2ArrayItem(
+                l_edge_vertices, 0, 1
+            )
 
             fn_mesh.getEdgeVertices(r_current_e, r_edge_vertices)
-            r_edge_vertices_0 = script_util.getInt2ArrayItem(r_edge_vertices, 0, 0)
-            r_edge_vertices_1 = script_util.getInt2ArrayItem(r_edge_vertices, 0, 1)
+            r_edge_vertices_0 = script_util.getInt2ArrayItem(
+                r_edge_vertices, 0, 0
+            )
+            r_edge_vertices_1 = script_util.getInt2ArrayItem(
+                r_edge_vertices, 0, 1
+            )
 
             if l_current_e == first_edge:
-                r_edge_vertices_0 = script_util.getInt2ArrayItem(r_edge_vertices, 0, 0)
-                r_edge_vertices_1 = script_util.getInt2ArrayItem(r_edge_vertices, 0, 1)
-                l_edge_vertices_0 = script_util.getInt2ArrayItem(l_edge_vertices, 0, 0)
-                l_edge_vertices_1 = script_util.getInt2ArrayItem(l_edge_vertices, 0, 1)
+                r_edge_vertices_0 = script_util.getInt2ArrayItem(
+                    r_edge_vertices, 0, 0
+                )
+                r_edge_vertices_1 = script_util.getInt2ArrayItem(
+                    r_edge_vertices, 0, 1
+                )
+                l_edge_vertices_0 = script_util.getInt2ArrayItem(
+                    l_edge_vertices, 0, 0
+                )
+                l_edge_vertices_1 = script_util.getInt2ArrayItem(
+                    l_edge_vertices, 0, 1
+                )
 
                 checked_v[l_edge_vertices_0] = r_edge_vertices_0
                 checked_v[l_edge_vertices_1] = r_edge_vertices_1
                 checked_v[r_edge_vertices_0] = l_edge_vertices_0
                 checked_v[r_edge_vertices_1] = l_edge_vertices_1
             else:
-                if checked_v[l_edge_vertices_0] == -1 and checked_v[r_edge_vertices_0] == -1:
+                if (
+                    checked_v[l_edge_vertices_0] == -1
+                    and checked_v[r_edge_vertices_0] == -1
+                ):
                     checked_v[l_edge_vertices_0] = r_edge_vertices_0
                     checked_v[r_edge_vertices_0] = l_edge_vertices_0
-                if checked_v[l_edge_vertices_1] == -1 and checked_v[r_edge_vertices_1] == -1:
+                if (
+                    checked_v[l_edge_vertices_1] == -1
+                    and checked_v[r_edge_vertices_1] == -1
+                ):
                     checked_v[l_edge_vertices_1] = r_edge_vertices_1
                     checked_v[r_edge_vertices_1] = l_edge_vertices_1
-                if checked_v[l_edge_vertices_0] == -1 and checked_v[r_edge_vertices_1] == -1:
+                if (
+                    checked_v[l_edge_vertices_0] == -1
+                    and checked_v[r_edge_vertices_1] == -1
+                ):
                     checked_v[l_edge_vertices_0] = r_edge_vertices_1
                     checked_v[r_edge_vertices_1] = l_edge_vertices_0
-                if checked_v[l_edge_vertices_1] == -1 and checked_v[r_edge_vertices_0] == -1:
+                if (
+                    checked_v[l_edge_vertices_1] == -1
+                    and checked_v[r_edge_vertices_0] == -1
+                ):
                     checked_v[l_edge_vertices_1] = r_edge_vertices_0
                     checked_v[r_edge_vertices_0] = l_edge_vertices_1
 
@@ -1089,14 +1217,13 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                 l_face_edges_count += 1
 
             for i in range(l_face_edges_count):
-
                 if checked_e[l_face_edges[i]] == -1:
-
                     edge_iter.setIndex(l_current_e, ptr)
 
-                    if edge_iter.connectedToEdge(l_face_edges[i]) \
-                            and l_current_e != l_face_edges[i]:
-
+                    if (
+                        edge_iter.connectedToEdge(l_face_edges[i])
+                        and l_current_e != l_face_edges[i]
+                    ):
                         fn_mesh.getEdgeVertices(
                             l_face_edges[i], l_if_checked_vertices
                         )
@@ -1107,15 +1234,17 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
                             l_if_checked_vertices, 0, 1
                         )
 
-                        if l_if_checked_vertex_0 == l_edge_vertices_0 \
-                                or l_if_checked_vertex_0 == l_edge_vertices_1:
-
+                        if (
+                            l_if_checked_vertex_0 == l_edge_vertices_0
+                            or l_if_checked_vertex_0 == l_edge_vertices_1
+                        ):
                             l_checked_vertex = l_if_checked_vertex_0
                             l_non_checked_vertex = l_if_checked_vertex_1
 
-                        elif l_if_checked_vertex_1 == l_edge_vertices_0 \
-                                or l_if_checked_vertex_1 == l_edge_vertices_1:
-
+                        elif (
+                            l_if_checked_vertex_1 == l_edge_vertices_0
+                            or l_if_checked_vertex_1 == l_edge_vertices_1
+                        ):
                             l_checked_vertex = l_if_checked_vertex_1
                             l_non_checked_vertex = l_if_checked_vertex_0
 
@@ -1124,29 +1253,49 @@ class EdgeFlowMirrorCommand(OpenMayaMPx.MPxCommand):
 
                         for k in range(r_face_edges_count):
                             edge_iter.setIndex(r_current_e, ptr)
-                            if edge_iter.connectedToEdge(r_face_edges[k]) \
-                                    and r_current_e != r_face_edges[k]:
+                            if (
+                                edge_iter.connectedToEdge(r_face_edges[k])
+                                and r_current_e != r_face_edges[k]
+                            ):
                                 fn_mesh.getEdgeVertices(
                                     r_face_edges[k], r_face_edge_vertices
                                 )
-                                r_face_edge_vertex_0 = script_util.getInt2ArrayItem(
-                                    r_face_edge_vertices, 0, 0
+                                r_face_edge_vertex_0 = (
+                                    script_util.getInt2ArrayItem(
+                                        r_face_edge_vertices, 0, 0
+                                    )
                                 )
-                                r_face_edge_vertex_1 = script_util.getInt2ArrayItem(
-                                    r_face_edge_vertices, 0, 1
+                                r_face_edge_vertex_1 = (
+                                    script_util.getInt2ArrayItem(
+                                        r_face_edge_vertices, 0, 1
+                                    )
                                 )
 
-                                if r_face_edge_vertex_0 == checked_v[l_checked_vertex]:
-                                    checked_v[l_non_checked_vertex] = r_face_edge_vertex_1
-                                    checked_v[r_face_edge_vertex_1] = l_non_checked_vertex
+                                if (
+                                    r_face_edge_vertex_0
+                                    == checked_v[l_checked_vertex]
+                                ):
+                                    checked_v[
+                                        l_non_checked_vertex
+                                    ] = r_face_edge_vertex_1
+                                    checked_v[
+                                        r_face_edge_vertex_1
+                                    ] = l_non_checked_vertex
                                     side_v[l_non_checked_vertex] = 2
                                     side_v[r_face_edge_vertex_1] = 1
                                     l_edge_queue.append(l_face_edges[i])
                                     r_edge_queue.append(r_face_edges[k])
 
-                                if r_face_edge_vertex_1 == checked_v[l_checked_vertex]:
-                                    checked_v[l_non_checked_vertex] = r_face_edge_vertex_0
-                                    checked_v[r_face_edge_vertex_0] = l_non_checked_vertex
+                                if (
+                                    r_face_edge_vertex_1
+                                    == checked_v[l_checked_vertex]
+                                ):
+                                    checked_v[
+                                        l_non_checked_vertex
+                                    ] = r_face_edge_vertex_0
+                                    checked_v[
+                                        r_face_edge_vertex_0
+                                    ] = l_non_checked_vertex
                                     side_v[l_non_checked_vertex] = 2
                                     side_v[r_face_edge_vertex_0] = 1
                                     l_edge_queue.append(l_face_edges[i])
