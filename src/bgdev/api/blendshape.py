@@ -130,7 +130,7 @@ def disconnect_target(blendshape, shape):
     """Disconnect given shape from blendshape node."""
     modifier = OpenMaya.MDGModifier()
     shape_dag = core.as_dag(shape, to_shape=True)
-    for plug in deformer.as_filter(blendshape).getConnections():
+    for plug in core.as_filter(blendshape).getConnections():
         source = plug.source()
         if plug.isDestination and source.node() == shape_dag.node():
             modifier.disconnect(source, plug)
