@@ -5,16 +5,22 @@
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 
 """
-from __future__ import absolute_import
 
-from collections import OrderedDict
-from functools import partial
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 import os
+from collections import OrderedDict
+from functools import partial
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2 import QtCore
+from PySide2 import QtGui
+from PySide2 import QtWidgets
 
 LOG = logging.getLogger(__name__)
+ICONS = os.path.join(os.path.dirname(__file__), "icons")
 
 
 class SliderLine(QtWidgets.QLineEdit):
@@ -133,13 +139,13 @@ class ScrollArea(QtWidgets.QScrollArea):
             subcontrol-origin: margin;
         }
         QScrollBar::up-arrow:vertical {
-            image: url(icons/arrow_up.png);
+            image: url(bgdev_icons:arrow_up.png);
             width: 15px;
             height: 15px;
             padding: 0px 0px 0px 1px /* top - right - bottom - left */
         }
         QScrollBar::down-arrow:vertical {
-            image: url(icons/arrow_down.png);
+            image: url(bgdev_icons:arrow_down.png);
             width: 15px;
             height: 15px;
             padding: 0px 0px 0px 1px /* top - right - bottom - left */
@@ -266,10 +272,10 @@ class GroupBox(QtWidgets.QGroupBox):
             height: %(height)s;
         }
         GroupBox::indicator:checked {
-            image: url(icons/arrow_down.png);
+            image: url(bgdev_icons:arrow_down.png);
         }
         GroupBox::indicator:unchecked {
-            image: url(icons/arrow_right.png);
+            image: url(bgdev_icons:arrow_right.png);
         }
     """
 
@@ -280,7 +286,7 @@ class GroupBox(QtWidgets.QGroupBox):
         header_color = color or "hsv(300, 90, 90)"
 
         # set chdir so icons work relatively
-        os.chdir(os.path.dirname(__file__))
+        QtCore.QDir.addSearchPath("bgdev_icons", ICONS)
 
         # set properties
         self.setStyleSheet(

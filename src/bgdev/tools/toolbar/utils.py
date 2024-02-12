@@ -3,19 +3,22 @@
 :created: 12/11/2018
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
-from __future__ import absolute_import
 
-from collections import OrderedDict
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import importlib
 import logging
 import os
 import pkgutil
 import sys
+from collections import OrderedDict
 
-from PySide2 import QtCore
 import six
 import yaml
 import yaml.representer
+from PySide2 import QtCore
 
 from . import cfg
 
@@ -60,7 +63,9 @@ def modpath_from_file(filename):
         path = os.path.normcase(os.path.abspath(path))
         if path and os.path.normcase(base).startswith(path):
             modpath = [
-                pkg for pkg in base[len(path) :].split(os.sep) if pkg  # noqa
+                pkg
+                for pkg in base[len(path) :].split(os.sep)
+                if pkg  # noqa
             ]
             if check_modpath_has_init(path, modpath[:-1]):
                 return ".".join(modpath)

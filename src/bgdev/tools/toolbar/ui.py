@@ -4,11 +4,18 @@
 :created: 09/11/2018
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 from collections import OrderedDict
 from functools import partial
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2 import QtCore
+from PySide2 import QtGui
+from PySide2 import QtWidgets
 
 from . import utils
 
@@ -167,13 +174,13 @@ class ScrollArea(QtWidgets.QScrollArea):
             subcontrol-origin: margin;
         }
         QScrollBar::up-arrow:vertical {
-            image: url(icons/arrow_up.png);
+            image: url(bgdev_toolbar_icons:arrow_up.png);
             width: 15px;
             height: 15px;
             padding: 0px 0px 0px 1px /* top - right - bottom - left */
         }
         QScrollBar::down-arrow:vertical {
-            image: url(icons/arrow_down.png);
+            image: url(bgdev_toolbar_icons:arrow_down.png);
             width: 15px;
             height: 15px;
             padding: 0px 0px 0px 1px /* top - right - bottom - left */
@@ -255,10 +262,10 @@ class GroupBox(QtWidgets.QGroupBox):
             height: %(height)s;
         }
         GroupBox::indicator:checked {
-            image: url(icons/groupbox_arrow_down.png);
+            image: url(bgdev_toolbar_icons:groupbox_arrow_down.png);
         }
         GroupBox::indicator:unchecked {
-            image: url(icons/groupbox_arrow_right.png);
+            image: url(bgdev_toolbar_icons:groupbox_arrow_right.png);
         }
     """
 

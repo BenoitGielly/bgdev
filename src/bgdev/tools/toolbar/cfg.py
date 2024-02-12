@@ -3,7 +3,10 @@
 :created: 26/11/2020
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import logging
 import os

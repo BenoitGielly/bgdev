@@ -3,7 +3,10 @@
 :created: 09/11/2018
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import logging
 import os
@@ -11,9 +14,13 @@ import traceback
 from collections import OrderedDict
 from functools import partial
 
-from PySide2 import QtGui, QtWidgets
+from PySide2 import QtCore
+from PySide2 import QtGui
+from PySide2 import QtWidgets
 
-from . import cfg, ui, utils
+from . import cfg
+from . import ui
+from . import utils
 
 logging.basicConfig()
 LOG = logging.getLogger(__name__)
@@ -21,6 +28,7 @@ LOG = logging.getLogger(__name__)
 PROJECT = os.environ.get("PROJECT")
 HOME = os.path.normpath(os.environ.get("HOME", os.environ.get("USERPROFILE")))
 TABS = os.path.join(".toolbar", "tabs")
+ICONS = os.path.join(os.path.dirname(__file__), "icons")
 
 
 def show(*args, **kwargs):
@@ -53,7 +61,7 @@ class BaseToolbar(QtWidgets.QWidget):
         self.setObjectName("Toolbar_mainWindow")
 
         # default variables
-        os.chdir(os.path.dirname(__file__))
+        QtCore.QDir.addSearchPath("bgdev_toolbar_icons", ICONS)
         self.scroll_areas = []
         self.group_boxes = []
 
@@ -224,7 +232,6 @@ class BaseToolbar(QtWidgets.QWidget):
         # read data and create group boxes
         self.group_boxes = []
         for title, group_data in data.items():
-
             type_ = group_data.get("type", "")
 
             # parse specific JSON type
