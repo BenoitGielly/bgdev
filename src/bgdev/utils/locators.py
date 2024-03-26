@@ -3,7 +3,10 @@
 :created: 05/03/2017
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import logging
 
@@ -100,7 +103,6 @@ def locator_on_selection(method="matrix"):
     # get selection
     selection = cmds.ls(selection=True, flatten=True)
     for each in selection:
-
         name = each + ("locator" if each.endswith("]") else "_locator")
         if cmds.objExists(name):
             name += "#"
@@ -143,6 +145,17 @@ def locator_on_selection(method="matrix"):
         elif method == "manip":
             position = cmds.manipMoveContext("Move", query=True, position=True)
             rotation = cmds.manipPivot(query=True, orientation=True)[0]
+            locator = cmds.spaceLocator(name=name)[0]
+            cmds.xform(
+                locator,
+                translation=position,
+                rotation=rotation,
+                worldSpace=True,
+            )
+
+        elif method == "points":
+            position = cmds.pointPosition(each)
+            rotation = [0, 0, 0]
             locator = cmds.spaceLocator(name=name)[0]
             cmds.xform(
                 locator,

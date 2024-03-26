@@ -3,7 +3,10 @@
 :created: 05/03/2017
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import logging
 
@@ -56,20 +59,14 @@ def matrix_constraint(driver, target, srt="srt"):
 
     for attr in [x + y for x in srt.lower() for y in "xyz"]:
         cmds.connectAttr(
-            "{0}.o{1}".format(decompose, attr), "{0}.{1}".format(target, attr)
+            "{}.o{}".format(decompose, attr), "{}.{}".format(target, attr)
         )
 
     return mult, decompose
 
 
 def aim_to_children(up_vector=(0, 1, 0), aim_vector=(1, 0, 0)):
-    """Find an up vector for the selection and aim toward each others.
-
-    Args:
-        up_vector:
-        aim_vector:
-
-    """
+    """Find an up vector for the selection and aim toward each others."""
     import pymel.core as pm
 
     # make sure selection order is active
@@ -100,7 +97,11 @@ def aim_to_children(up_vector=(0, 1, 0), aim_vector=(1, 0, 0)):
     pt_b = selection[-1].getTranslation(space="world")
     dist = [0, (pt_a - pt_b).length(), 0]
     pm.move(
-        pt_up, dist, relative=True, objectSpace=True, worldSpaceDistance=True,
+        pt_up,
+        dist,
+        relative=True,
+        objectSpace=True,
+        worldSpaceDistance=True,
     )
 
     # aim each others according to the pt_up Vector
@@ -117,7 +118,10 @@ def aim_to_children(up_vector=(0, 1, 0), aim_vector=(1, 0, 0)):
             pm.delete(aim)
         else:
             rotation = pm.xform(
-                selection[i - 1], query=True, rotation=True, worldSpace=True,
+                selection[i - 1],
+                query=True,
+                rotation=True,
+                worldSpace=True,
             )
             pm.xform(each, rotation=rotation, worldSpace=True)
 
