@@ -80,4 +80,4 @@ def convert_side(data, sides="LR", both=False):
             _ = [values.remove(x) for x in list(values) if values.count(x) > 1]
         data[key] = values
 
-    return data.values()[0] if is_list else data
+    return next(iter(data.values())) if is_list else data
