@@ -4,6 +4,7 @@ Mostly, controler shapes creation (needs to be turned into data)
 
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
 from __future__ import print_function
 
 import json
@@ -11,7 +12,6 @@ import logging
 import os
 
 import yaml
-
 from maya import cmds
 from maya.api import OpenMaya
 
@@ -117,9 +117,7 @@ def get_rig_controls():
 
 def get_ctrl_data(name, variant=0):
     """Query the controler data from its name."""
-    path = os.path.join(
-        os.path.dirname(__file__), "controlers", name + ".yaml"
-    )
+    path = os.path.join(os.path.dirname(__file__), "controlers", name + ".yaml")
     if not os.path.exists(path):
         msg = (
             "%r doesn't exists. "
@@ -129,7 +127,7 @@ def get_ctrl_data(name, variant=0):
         return None
 
     with open(path, "r") as stream:
-        data = yaml.load(stream)
+        data = yaml.safe_load(stream)
 
     return data.get("variant%s" % variant)
 
@@ -146,7 +144,7 @@ def list_controlers():
     msg = "\nAvailable controls are (variants, name):\n"
     for each in ctrls:
         with open(each, "r") as stream:
-            data = yaml.load(stream)
+            data = yaml.safe_load(stream)
 
         name = os.path.splitext(os.path.basename(each))[0]
         msg += "\t%s %r\n" % (len(data), name)
