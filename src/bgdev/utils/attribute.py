@@ -2,6 +2,11 @@
 
 :author: Benoit Gielly (benoit.gielly@gmail.com)
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 from ast import literal_eval
 
@@ -73,7 +78,7 @@ def attributes_restore(node):
         return False
 
     attr_data = literal_eval(cmds.getAttr(base_attr) or "{}")
-    for _attr, values in attr_data.iteritems():
+    for _attr, values in attr_data.items():
         node_attr = "{}.{}".format(node, _attr)
         cmds.setAttr(node_attr, **values)
 
