@@ -3,12 +3,18 @@
 :created: 03/06/2019
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import cProfile
 import datetime
 import logging
 import os
 import pstats
 import time
+from contextlib import ContextDecorator
 
 LOG = logging.getLogger(__name__)
 
@@ -41,7 +47,8 @@ def frames_per_second(
 
     """
     # pylint: disable=import-outside-toplevel
-    from maya import cmds, mel
+    from maya import cmds
+    from maya import mel
     from maya.debug import emPerformanceTest  # type: ignore
 
     # override Maya's emPerformanceTest method to work with custom viewports
@@ -143,7 +150,7 @@ def frames_per_second(
     return rate
 
 
-class Profiler(object):
+class Profiler(ContextDecorator):
     """Create a python profiler to check for code usage.
 
     Example:
@@ -151,7 +158,7 @@ class Profiler(object):
 
             from bgdev.tools.performance import Profiler()
 
-            # use as an instanciated object
+            # use as an instantiated object
             profiler = Profiler()
             profiler.start()
             >>> run python code
