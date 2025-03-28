@@ -4,13 +4,16 @@
 :created: 14/10/2018
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import logging
 import os
 import sys
 
-from PySide2 import QtWidgets
+from qtpy import QtWidgets
 
 from ... import main
 

@@ -17,12 +17,19 @@ still work.
 =====================================================================
 
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 
-import shiboken2
-from PySide2 import QtCore, QtWidgets
-
-from maya import OpenMayaUI, cmds, mel
+from maya import OpenMayaUI
+from maya import cmds
+from maya import mel
+from qtpy import QtCore
+from qtpy import QtWidgets
+from qtpy import shiboken
 
 
 def load_plugin():
@@ -60,7 +67,7 @@ def get_maya_window():
             ptr = long(ptr)
         except NameError:
             ptr = int(ptr)
-        return shiboken2.wrapInstance(ptr, QtWidgets.QWidget)
+        return shiboken.wrapInstance(ptr, QtWidgets.QWidget)
     return None
 
 

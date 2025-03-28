@@ -3,11 +3,15 @@
 :created: 31/01/2019
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 
-from PySide2 import QtWidgets
-
 from maya import cmds
+from qtpy import QtWidgets
 
 import bgdev.utils.controler
 

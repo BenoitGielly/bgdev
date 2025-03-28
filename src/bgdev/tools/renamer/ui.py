@@ -3,9 +3,15 @@
 :created: 06/04/2016
 :author: Benoit Gielly <benoit.gielly@gmail.com>
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from functools import partial
 
-from PySide2 import QtCore, QtWidgets
+from qtpy import QtCore
+from qtpy import QtWidgets
 
 from .utils import check_image
 

@@ -3,11 +3,16 @@
 :created: 08/02/2019
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
-from PySide2.QtWidgets import QWidget
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from qtpy.QtWidgets import QWidget
 
 
 def convert_css_color(css_color):
-    """Convert given color using the PySide2 CSS API.
+    """Convert given color using the qtpy CSS API.
 
     Args:
         css_color (str): Any color-string you would type in a Widget's CSS.

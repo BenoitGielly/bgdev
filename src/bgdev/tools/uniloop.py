@@ -3,10 +3,16 @@
 :created: 14/10/2016
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 
-from PySide2 import QtCore, QtWidgets
 from maya import cmds
+from qtpy import QtCore
+from qtpy import QtWidgets
 
 LOG = logging.getLogger(__name__)
 
@@ -24,9 +30,7 @@ class LineEdit(QtWidgets.QLineEdit):
 
     enterPressed = QtCore.Signal()
 
-    def __init__(
-        self, *args, **kwargs
-    ):  # pylint: disable=useless-super-delegation
+    def __init__(self, *args, **kwargs):  # pylint: disable=useless-super-delegation
         super(LineEdit, self).__init__(*args, **kwargs)
 
     def keyPressEvent(self, event):  # pylint: disable=invalid-name

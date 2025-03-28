@@ -18,7 +18,7 @@ from collections import OrderedDict
 import six
 import yaml
 import yaml.representer
-from PySide2 import QtCore
+from qtpy import QtCore
 
 from . import cfg
 

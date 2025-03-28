@@ -4,8 +4,14 @@
 :author: Benoit Gielly <benoit.gielly@gmail.com>
 
 """
-from PySide2.QtCore import QObject
-from maya import cmds, mel
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from maya import cmds
+from maya import mel
+from qtpy.QtCore import QObject
 
 from . import utils
 
@@ -68,8 +74,8 @@ def get_available_controls():
 
     tools = mel.eval("$ctrl_tmp_var = $gUIComponentToolBarArray;")
     docks = mel.eval("$ctrl_tmp_var = $gUIComponentDockControlArray;")
-    controls = sorted(
-        {x for x in tools + docks if cmds.workspaceControl(x, exists=True)}
-    )
+    controls = sorted({
+        x for x in tools + docks if cmds.workspaceControl(x, exists=True)
+    })
 
     return controls

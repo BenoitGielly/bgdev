@@ -7,8 +7,15 @@ ToDo:
 :author: Benoit Gielly <benoit.gielly@gmail.com>
 
 """
-from PySide2 import QtCore, QtWidgets
-from maya import cmds, mel
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from maya import cmds
+from maya import mel
+from qtpy import QtCore
+from qtpy import QtWidgets
 
 from . import utils
 

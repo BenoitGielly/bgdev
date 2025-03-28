@@ -4,17 +4,22 @@
 :created: 14/10/2018
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import logging
 import os
 
-import shiboken2
-from PySide2 import QtCore, QtWidgets
+from maya import OpenMayaUI
+from maya import cmds
+from qtpy import QtCore
+from qtpy import QtWidgets
+from qtpy import shiboken
 
-from maya import OpenMayaUI, cmds
-
-from ... import cfg, main
+from ... import cfg
+from ... import main
 
 LOG = logging.getLogger(__name__)
 
@@ -41,7 +46,7 @@ def maya_window():
 
 
 def to_qwidget(ctrl):
-    """Convert a Maya widget to a PySide2 QWidget.
+    """Convert a Maya widget to a qtpy QWidget.
 
     Args:
         ctrl (str): Name of the maya widget as a string.
@@ -52,7 +57,7 @@ def to_qwidget(ctrl):
     for method in ["findControl", "findLayout", "findMenuItem"]:
         ptr = getattr(OpenMayaUI.MQtUtil, method)(ctrl)
         if ptr:
-            return shiboken2.wrapInstance(int(ptr), QtWidgets.QWidget)
+            return shiboken.wrapInstance(int(ptr), QtWidgets.QWidget)
     return None
 
 

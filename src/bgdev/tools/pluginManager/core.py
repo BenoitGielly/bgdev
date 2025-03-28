@@ -4,13 +4,20 @@
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
 
-from collections import defaultdict
-import fnmatch
-from functools import partial
-import os
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-from PySide2 import QtCore, QtGui, QtWidgets
-from maya import cmds, mel
+import fnmatch
+import os
+from collections import defaultdict
+from functools import partial
+
+from maya import cmds
+from maya import mel
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtWidgets
 
 
 class FrameLayout(QtWidgets.QGroupBox):
@@ -45,7 +52,7 @@ class FrameLayout(QtWidgets.QGroupBox):
 
     @staticmethod
     def css():
-        """Stylesheet for the groupbox """
+        """Stylesheet for the groupbox"""
 
         css = (
             "QGroupBox {font: bold helvetica} "
@@ -70,7 +77,7 @@ class FrameLayout(QtWidgets.QGroupBox):
         return self.layout()
 
     def mouseReleaseEvent(self, event):
-        """Overriding the mouseRelease event """
+        """Overriding the mouseRelease event"""
 
         mouse = QtCore.Qt.MouseButton
         if event.button() == mouse.LeftButton:
@@ -102,7 +109,7 @@ class PluginsManager(QtWidgets.QDialog):
 
     @staticmethod
     def check_instance():
-        """Close the window if already exists. """
+        """Close the window if already exists."""
         if cmds.window("bg_PluginManager", exists=True):
             cmds.deleteUI("bg_PluginManager")
 
@@ -163,7 +170,6 @@ class PluginsManager(QtWidgets.QDialog):
         )
 
         for widget, name in self.all_plugins.items():
-
             if text and name not in filtered:
                 widget.hide()
             else:

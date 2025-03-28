@@ -4,14 +4,21 @@
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import importlib
 import inspect
 import os
 import pkgutil
 import sys
 
-from PySide2 import QtCore, QtGui, QtWidgets
-import shiboken2
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtWidgets
+from qtpy import shiboken
 
 
 def main_window():
@@ -58,7 +65,7 @@ def maya_window():
 
 
 def to_qwidget(ctrl):
-    """Convert a Maya widget to a PySide2 QWidget.
+    """Convert a Maya widget to a qtpy QWidget.
 
     Args:
         ctrl (str): Name of the maya widget as a string.
@@ -75,7 +82,7 @@ def to_qwidget(ctrl):
                 ptr = long(ptr)
             except NameError:
                 ptr = int(ptr)
-            return shiboken2.wrapInstance(ptr, QtWidgets.QWidget)
+            return shiboken.wrapInstance(ptr, QtWidgets.QWidget)
     return None
 
 

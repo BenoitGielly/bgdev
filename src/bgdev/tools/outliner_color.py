@@ -3,10 +3,16 @@
 :created: 11/01/2019
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from functools import partial
 
-from PySide2 import QtGui, QtWidgets
 from maya import cmds
+from qtpy import QtGui
+from qtpy import QtWidgets
 
 
 class Separator(QtWidgets.QLabel):  # pylint: disable=too-few-public-methods

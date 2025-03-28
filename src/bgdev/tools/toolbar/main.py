@@ -14,9 +14,9 @@ import traceback
 from collections import OrderedDict
 from functools import partial
 
-from PySide2 import QtCore
-from PySide2 import QtGui
-from PySide2 import QtWidgets
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtWidgets
 
 from . import cfg
 from . import ui

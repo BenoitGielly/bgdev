@@ -5,6 +5,8 @@ Mostly, controler shapes creation (needs to be turned into data)
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 
 import json
@@ -117,7 +119,9 @@ def get_rig_controls():
 
 def get_ctrl_data(name, variant=0):
     """Query the controler data from its name."""
-    path = os.path.join(os.path.dirname(__file__), "controlers", name + ".yaml")
+    path = os.path.join(
+        os.path.dirname(__file__), "controlers", name + ".yaml"
+    )
     if not os.path.exists(path):
         msg = (
             "%r doesn't exists. "
@@ -165,7 +169,7 @@ def create_control(  # pylint: disable=too-many-arguments
         normal (tuple): Which axis should the controler aim to when created.
             Default axis is +Y
         color (str): The name of the CSS color to apply as an RGB override.
-            Uses the PySide2 StyleSheet API to convert names to RGB color.
+            Uses the qtpy StyleSheet API to convert names to RGB color.
 
     Returns:
         tuple: The controler and its shape.

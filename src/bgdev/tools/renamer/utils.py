@@ -2,12 +2,19 @@
 
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
-from functools import partial, wraps
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import inspect
 import os
+from functools import partial
+from functools import wraps
 from traceback import print_exc
 
-from PySide2 import QtCore, QtGui
+from qtpy import QtCore
+from qtpy import QtGui
 
 
 def _undo_me(func, args, kwargs):

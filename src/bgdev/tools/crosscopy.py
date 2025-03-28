@@ -3,14 +3,19 @@
 :author: Benoit Gielly <benoit.gielly@gmail.com>
 :created: 25/01/2021
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import abc
 import logging
 import os
 import pkgutil
 import tempfile
 
-from PySide2 import QtWidgets
 import six
+from qtpy import QtWidgets
 
 LOG = logging.getLogger(__name__)
 

@@ -3,14 +3,19 @@
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 from functools import partial
-from math import sin, sqrt
-
-from PySide2 import QtWidgets
+from math import sin
+from math import sqrt
 
 from maya import cmds
 from maya.api import OpenMaya
+from qtpy import QtWidgets
 
 LOG = logging.getLogger(__name__)
 
@@ -169,9 +174,24 @@ def mirror_position(selected=False):
 
     for each in selection:
         matrix = cmds.xform(each, query=True, matrix=True, worldSpace=True)
-        inverse = OpenMaya.MMatrix(
-            [-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-        )
+        inverse = OpenMaya.MMatrix([
+            -1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+        ])
         result = OpenMaya.MMatrix(matrix) * inverse
         node = each if selected else cmds.spaceLocator(name=each + "_loc")[0]
         cmds.xform(node, matrix=result, worldSpace=True)
@@ -313,7 +333,7 @@ def align_fingers(
         *ah_values,
         relative=True,
         objectSpace=True,
-        worldSpaceDistance=True
+        worldSpaceDistance=True,
     )
 
     # re-orient properly
@@ -336,7 +356,7 @@ def align_fingers(
         *ac_values,
         relative=True,
         objectSpace=True,
-        worldSpaceDistance=True
+        worldSpaceDistance=True,
     )
 
     # orient the base locator

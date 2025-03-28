@@ -4,11 +4,15 @@
 :created: 14/01/2019
 :author: Benoit GIELLY <benoit.gielly@gmail.com>
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from functools import partial
 
-from PySide2 import QtWidgets
-
 from maya import cmds
+from qtpy import QtWidgets
 
 
 class PlaneVector(QtWidgets.QDialog):
